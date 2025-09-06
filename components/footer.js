@@ -1,7 +1,7 @@
 class MainFooter extends HTMLElement {
     connectedCallback() {
         this.innerHTML = `
-        <footer class="bg-light text-center py-3 fixed-bottom" role="contentinfo">
+        <footer class="bg-light text-center py-3">
             <div class="row justify-between pt-5 align-items-center">
                 <div class="col col-md-4">
                     <h4>eCommerce</h4>
