@@ -1,0 +1,51 @@
+@import url("./bootstrap.min.css");
+
+@import url("./all.min.css");
+
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+    --bs-primary: #88ad35;
+    --bs-primary-rgb: 136, 173, 53;
+    --bs-secondary: #454545;
+    --bs-secondary-rgb: 69, 69, 69;
+    --bs-success: #88ad35;
+    --bs-info: #88ad35;
+    --bs-warning: #698927;
+    --bs-danger: #222222;
+
+    --bs-body-color: #222222;
+    --bs-body-bg: #ffffff;
+    --bs-dark: #222222;
+    --bs-gray-900: #222222;
+    --bs-gray-800: #2b2b2b;
+    --bs-gray-700: #454545;
+    --bs-gray-200: #d1d1d1;
+    --bs-gray-100: #ecf4d3;
+
+    --bs-border-color: #d1d1d1;
+    --bs-border-radius: 1rem;
+    --bs-border-radius-lg: 1.25rem;
+    --bs-border-radius-xl: 1.5rem;
+
+    --bs-font-sans-serif: "Instrument Sans", sans-serif;
+    --bs-heading-font-family: "Inter", sans-serif;
+    --bs-link-color: #698927;
+    --bs-link-hover-color: #56721f;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.display-1,
+.display-2,
+.display-3,
+.display-4,
+.display-5,
+.display-6 {
+    font-family: var(--bs-heading-font-family);
+    letter-spacing: -0.01em;
+}
