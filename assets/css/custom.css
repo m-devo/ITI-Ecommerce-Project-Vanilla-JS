@@ -32,6 +32,9 @@
     --bs-heading-font-family: "Inter", sans-serif;
     --bs-link-color: #698927;
     --bs-link-hover-color: #56721f;
+    --bs-light: #ecf4d3;
+    --bs-light-rgb: 236, 244, 211;
+
 }
 
 h1,
