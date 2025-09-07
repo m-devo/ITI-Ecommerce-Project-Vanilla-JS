@@ -62,6 +62,8 @@ function removeProductFromCart(productId) {
     }
 }
 
+
+
 function updateProductQuantity(productId, newQuantity) {
     let cart = getCart();
     const itemToUpdate = cart.find((item) => item.id === productId);
@@ -173,7 +175,7 @@ function attachCartEventListeners() {
     });
 }
 
-/* ---- You might like section ---- */ 
+/* ---- You might like section ---- */ // will be populated <<<<
 async function loadRelatedProducts() {
     try {
         const response = await fetch("../../db.json");
