@@ -1,1 +1,1 @@
-# ITI-Eccomerce-Project-Vanilla-JS
+# ITI-Ecommerce-Project-Vanilla-JS
