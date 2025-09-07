@@ -1,1 +1,1 @@
-// This is for common js function that are to be used through the project
+// This is for common js functions that are to be used through the project
