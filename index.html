@@ -6,12 +6,12 @@
     <title>Home</title>
 
     <link rel="stylesheet" href="assets/css/custom.css" />
-    <link rel="stylesheet" href="home.css" />
+    <link rel="stylesheet" href="./pages/home/home.css" />
     <script src="components/navbar.js" type="module"></script>
     <script src="components/footer.js" type="module"></script>
   </head>
   <body>
-    <main-navbar></main-navbar>
+    <main-navbar active-link="Home"></main-navbar>
     <!-- Hero Section -->
     <section class="hero-section">
       <div class="hero-overlay">
@@ -31,7 +31,7 @@
                 every moment smarter and brighter.
               </p>
               <a
-                href="products/products.html"
+                href="/pages/products/products.html"
                 class="btn btn-hero btn-lg px-5 py-3 mt-4"
               >
                 Shop Now
@@ -88,7 +88,9 @@
         </div>
       </div>
     </section>
+
+    <main-footer active-link="Home"></main-footer>
     <script src="assets/js/bootstrap.min.js"></script>
-    <script src="home.js"></script>
+    <script src="/pages/home/home.js"></script>
   </body>
 </html>

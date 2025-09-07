@@ -507,7 +507,7 @@ function viewProductDetails(productId) {
   // Store the selected product ID for the details page
   localStorage.setItem("selectedProductId", productId);
   // Navigate to product details page
-  window.location.href = "product-details.html";
+  window.location.href = "../product-details/product-details.html";
 }
 
 // Show notification
