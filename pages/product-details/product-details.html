@@ -5,11 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Product Details</title>
 
-    <link rel="stylesheet" href="../assets/css/custom.css" />
-    <link rel="stylesheet" href="../home.css" />
-    <link rel="stylesheet" href="product.css" />
+    <link rel="stylesheet" href="../../assets/css/custom.css" />
+    <link rel="stylesheet" href="../home/home.css" />
+    <link rel="stylesheet" href="../products/product.css" />
+
+    <script src="../../components/navbar.js" type="module"></script>
+    <script src="../../components/footer.js" type="module"></script>
   </head>
   <body>
+    <main-navbar active-link="Products"></main-navbar>
     <!-- Product Details Section -->
     <section class="product-details-section">
       <div class="container">
@@ -18,9 +22,9 @@
           <div class="col-12">
             <nav aria-label="breadcrumb" class="mb-4">
               <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="../home.html">Home</a></li>
+                <li class="breadcrumb-item"><a href="../../index.html">Home</a></li>
                 <li class="breadcrumb-item">
-                  <a href="products.html">Products</a>
+                  <a href="../products/products.html">Products</a>
                 </li>
                 <li
                   class="breadcrumb-item active"
@@ -50,9 +54,10 @@
       </div>
     </section>
 
-    <script src="../assets/js/bootstrap.min.js"></script>
-    <script src="../home.js"></script>
-    <script src="product.js"></script>
-    <script src="product-details.js"></script>
+    <main-footer active-link="Products"></main-footer>
+    <script src="../../assets/js/bootstrap.min.js"></script>
+    <script src="../home/home.js"></script>
+    <script src="../products/product.js"></script>
+    <script src="./product-details.js"></script>
   </body>
 </html>
