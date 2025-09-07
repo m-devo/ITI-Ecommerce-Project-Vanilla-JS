@@ -12,12 +12,12 @@ function showNotification(message, type = "success") {
 }
 
 function getCart() {
-    const cartJson = localStorage.getItem("shoppingCart");
+    const cartJson = localStorage.getItem("cart");
     return cartJson ? JSON.parse(cartJson) : [];
 }
 
 function saveCart(cart) {
-    localStorage.setItem("shoppingCart", JSON.stringify(cart));
+    localStorage.setItem("cart", JSON.stringify(cart));
     updateCartIcon();
 }
 
@@ -45,7 +45,7 @@ function addProductToCart(product, quantity = 1) {
         cart.push(product);
     }
     saveCart(cart);
-    showNotification(`${product.name} has been added to cart.`, "success");
+    showNotification(`${product.name} Added to Cart.`, "success");
 
     if (document.getElementById("cart-items-container")) {
         renderCart();
