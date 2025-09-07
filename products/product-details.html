@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Product Details</title>
+
+    <link rel="stylesheet" href="../assets/css/custom.css" />
+    <link rel="stylesheet" href="../home.css" />
+    <link rel="stylesheet" href="product.css" />
+  </head>
+  <body>
+    <!-- Product Details Section -->
+    <section class="product-details-section">
+      <div class="container">
+        <div class="row">
+          <!-- Breadcrumb -->
+          <div class="col-12">
+            <nav aria-label="breadcrumb" class="mb-4">
+              <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="../home.html">Home</a></li>
+                <li class="breadcrumb-item">
+                  <a href="products.html">Products</a>
+                </li>
+                <li
+                  class="breadcrumb-item active"
+                  aria-current="page"
+                  id="breadcrumb-product"
+                >
+                  Product
+                </li>
+              </ol>
+            </nav>
+          </div>
+        </div>
+
+        <div id="product-detail-content"></div>
+      </div>
+    </section>
+
+    <!-- Related Products Section -->
+    <section class="related-products-section py-5 bg-light">
+      <div class="container">
+        <div class="text-center mb-5">
+          <h2 class="display-6 fw-bold">Related Products</h2>
+          <p class="text-muted">You might also like these products</p>
+        </div>
+
+        <div id="related-products-container" class="row g-4"></div>
+      </div>
+    </section>
+
+    <script src="../assets/js/bootstrap.min.js"></script>
+    <script src="../home.js"></script>
+    <script src="product.js"></script>
+    <script src="product-details.js"></script>
+  </body>
+</html>
