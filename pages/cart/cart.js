@@ -63,7 +63,6 @@ function removeProductFromCart(productId) {
 }
 
 
-
 function updateProductQuantity(productId, newQuantity) {
     let cart = getCart();
     const itemToUpdate = cart.find((item) => item.id === productId);
