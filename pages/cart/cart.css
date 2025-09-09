@@ -1,49 +1,182 @@
-    @import url("../assets/css/custom.css");
-    /* Custom Font */
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@import url("../../assets/css/custom.css");
+/* Custom Font */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
 
-    body {
-        font-family: var(--bs-font-sans-serif);
-        /* background-color: var(--bs-gray-100); */
+:root {
+    --primary: var(--bs-primary);
+    --primary-dark: var(--bs-warning);
+    --danger: #dc3545;
+    --danger-dark: #bb2d3b;
+}
+
+body {
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.5rem;
+}
+
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px 20px;
+    border-radius: 8px;
+    color: white;
+    z-index: 1050;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: opacity 0.3s, transform 0.3s;
+    max-width: 350px;
+}
+
+.notification.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.notification.success {
+    background-color: var(--primary);
+}
+
+.notification.danger {
+    background-color: var(--danger);
+}
+
+.notification.hiding {
+    opacity: 0;
+    transform: translateY(-20px);
+}
+
+.cart-badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background-color: var(--primary);
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-size: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.feature-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 1.5rem 0;
+}
+
+.feature-icon {
+    font-size: 2.5rem;
+    color: var(--primary);
+    margin-bottom: 1rem;
+}
+
+.cart-item {
+    padding: 1.5rem 0;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.cart-item:last-child {
+    border-bottom: none;
+}
+
+.cart-item-img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.quantity-input {
+    width: 70px;
+    text-align: center;
+}
+
+.summary-box {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    padding: 1.5rem;
+    position: sticky;
+    top: 120px;
+}
+
+.product-card {
+    transition: transform 0.3s;
+    height: 100%;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+}
+
+.product-img {
+    height: 200px;
+    object-fit: cover;
+}
+
+.btn-primary-custom {
+    background-color: var(--primary);
+    border-color: var(--primary);
+    color: white;
+}
+
+.btn-primary-custom:hover {
+    background-color: var(--primary-dark);
+    border-color: var(--primary-dark);
+    color: white;
+}
+
+.btn-outline-primary-custom {
+    color: var(--primary);
+    border-color: var(--primary);
+}
+
+.btn-outline-primary-custom:hover {
+    background-color: var(--primary);
+    border-color: var(--primary);
+    color: white;
+}
+
+.empty-cart {
+    padding: 3rem 1rem;
+    text-align: center;
+    border: 2px dashed #dee2e6;
+    border-radius: 8px;
+}
+
+.empty-cart-icon {
+    font-size: 4rem;
+    color: #6c757d;
+    margin-bottom: 1rem;
+}
+
+footer {
+    margin-top: auto;
+}
+
+@media (min-width: 768px) {
+    .feature-box {
+        flex-direction: row;
+        text-align: left;
     }
 
-    /* Confirmation Alert Button */
-    dialog::backdrop {
-        /* background-color: var(--bs-body-color); */
-        backdrop-filter: blur(4px);
+    .feature-icon {
+        margin-right: 1rem;
+        margin-bottom: 0;
+        font-size: 2rem;
     }
-
-    /* Notification styles */
-    #notification-container {
-        position: fixed;
-        top: 1.25rem;
-        right: 1.25rem;
-        z-index: 1056;
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-    }
-
-    .notification {
-        padding: 1rem;
-        border-radius: 0.5rem;
-        color: var(--bs-body-bg);
-        font-weight: 500;
-        box-shadow: 0 4px 6px -1px rgb(var(--bs-light)), 0 2px 4px -2px rgb(var(--bs-light));
-        opacity: 1;
-        transition: opacity 0.5s ease-out, transform 0.3s ease-in-out;
-        transform: translateX(0);
-    }
-
-    .notification.hiding {
-        opacity: 0;
-        transform: translateX(100%);
-    }
-
-    .notification.success {
-        background-color: var(--bs-primary);
-    }
-
-    .notification.danger {
-        background-color: #EF4444;
-    }
+}

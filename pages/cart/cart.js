@@ -5,9 +5,19 @@ function showNotification(message, type = "success") {
     notification.className = `notification ${type}`;
     notification.textContent = message;
     container.appendChild(notification);
+
+    // Show notification
     setTimeout(() => {
+        notification.classList.add("show");
+    }, 10);
+
+    // Hide and remove after 3 seconds
+    setTimeout(() => {
+        notification.classList.remove("show");
         notification.classList.add("hiding");
-        notification.addEventListener("transitionend", () => notification.remove());
+        setTimeout(() => {
+            notification.remove();
+        }, 300);
     }, 3000);
 }
 
@@ -62,7 +72,6 @@ function removeProductFromCart(productId) {
     }
 }
 
-
 function updateProductQuantity(productId, newQuantity) {
     let cart = getCart();
     const itemToUpdate = cart.find((item) => item.id === productId);
@@ -79,8 +88,7 @@ function getCartSubtotal() {
     );
 }
 
-
-// turning 
+// turning
 
 /* --- page logic --- */
 const SHIPPING_COST = 50.0;
@@ -95,41 +103,41 @@ let productIdToDelete = null;
 
 function renderCart() {
     const items = getCart();
-    cartContainer.innerHTML = ""; // remove all <<< and start from begining
+    cartContainer.innerHTML = ""; // remove all and start from beginning
 
     if (items.length === 0) {
         cartContainer.innerHTML = `
-                    <div class="text-center p-8 border-2 border-dashed rounded-lg">
-                        <i data-lucide="shopping-basket" class="w-16 h-16 mx-auto text-gray-300"></i>
-                        <h2 class="mt-4 text-xl font-semibold text-gray-700">Your Cart is Empty</h2>
-                        <p class="mt-2 text-gray-500">Looks like you haven't added anything to your cart yet.</p>
-                        <a href="../products/products.html" class="mt-6 inline-block bg-emerald-600 text-white font-bold py-2 px-5 rounded-lg shadow hover:bg-emerald-700 transition"> Start Shopping
-                        </a>
+                    <div class="empty-cart">
+                        <i class="bi bi-basket empty-cart-icon"></i>
+                        <h2 class="h4 mt-3">Your Cart is Empty</h2>
+                        <p class="text-muted mt-2">Looks like you haven't added anything to your cart yet.</p>
+                        <a href="../products/products.html" class="btn btn-primary-custom mt-3">Start Shopping</a>
                     </div>
                 `;
     } else {
         items.forEach((item) => {
             const itemEl = document.createElement("div");
-            itemEl.className =
-                "flex flex-col sm:flex-row items-center gap-4 border-b border-gray-200 pb-4 last:border-b-0 last:pb-0";
+            itemEl.className = "cart-item row";
             itemEl.innerHTML = `
-                        <img src="${item.image}" alt="${item.name
-                }" class="w-28 h-28 object-cover rounded-lg flex-shrink-0">
-                        <div class="flex-grow text-center sm:text-left">
-                            <h3 class="font-bold text-lg text-gray-800">${item.name
-                }</h3>
-                            <p class="text-sm text-gray-500 mt-1">${item.description || "No description available."
-                }</p>
-                            <div class="flex items-center justify-center sm:justify-start mt-3">
-                                <span class="font-semibold text-gray-600">Quantity:</span>
-                                <input type="number" class="quantity-input ml-2 w-16 text-center border rounded-md focus:ring-2 focus:ring-emerald-300" value="${item.quantity
-                }" min="1" data-id="${item.id}"> </div>
+                        <div class="col-12 col-sm-3 text-center mb-3 mb-sm-0">
+                            <img src="${item.image}" alt="${item.name
+                }" class="cart-item-img">
                         </div>
-                        <div class="text-center sm:text-right">
-                            <p class="font-bold text-lg text-gray-900">${(
+                        <div class="col-12 col-sm-5 text-center text-sm-start">
+                            <h3 class="h5 fw-bold">${item.name}</h3>
+                            <p class="text-muted small">${item.description || "No description available."
+                }</p>
+                            <div class="d-flex align-items-center justify-content-center justify-content-sm-start mt-2">
+                                <span class="fw-medium me-2">Quantity:</span>
+                                <input type="number" class="form-control quantity-input" value="${item.quantity
+                }" min="1" data-id="${item.id}">
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-4 text-center text-sm-end">
+                            <p class="fw-bold fs-5">${(
                     item.price * item.quantity
                 ).toFixed(2)} EGP</p>
-                            <button class="remove-btn text-red-500 hover:text-red-700 text-sm font-medium mt-2" data-id="${item.id
+                            <button class="btn btn-link text-danger p-0 remove-btn" data-id="${item.id
                 }">Remove</button>
                         </div>
                     `;
@@ -139,7 +147,6 @@ function renderCart() {
 
     updateSummary();
     attachCartEventListeners();
-    lucide.createIcons();
 }
 
 function updateSummary() {
@@ -155,16 +162,23 @@ function attachCartEventListeners() {
     document.querySelectorAll(".remove-btn").forEach((button) => {
         button.addEventListener("click", (event) => {
             productIdToDelete = parseInt(event.target.dataset.id);
-            confirmDialog.showModal();
+            const modal = new bootstrap.Modal(
+                document.getElementById("confirm-dialog")
+            );
+            modal.show();
         });
     });
+
     document.querySelectorAll(".quantity-input").forEach((input) => {
         input.addEventListener("change", (event) => {
             const productId = parseInt(event.target.dataset.id);
             const newQuantity = parseInt(event.target.value);
             if (newQuantity < 1) {
                 productIdToDelete = productId;
-                confirmDialog.showModal();
+                const modal = new bootstrap.Modal(
+                    document.getElementById("confirm-dialog")
+                );
+                modal.show();
                 renderCart();
             } else {
                 updateProductQuantity(productId, newQuantity);
@@ -174,77 +188,117 @@ function attachCartEventListeners() {
     });
 }
 
-/* ---- You might like section ---- */ // will be populated <<<<
+/* ---- You might like section ---- */
 async function loadRelatedProducts() {
     try {
-        const response = await fetch("../../db.json");
-        if (!response.ok) throw new Error("Network response was not ok");
-        const data = await response.json();
-        const products = data.products.slice(0, 4);
+        // Simulate API call - later this will be replaced with actual API endpoint
+        const mockProducts = [
+            {
+                id: 101,
+                name: "Wireless Headphones",
+                price: 59.99,
+                image:
+                    "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
+                description:
+                    "High-quality wireless headphones with noise cancellation and premium sound",
+            },
+            ,
+            {
+                id: 2,
+                name: "Smart Watch",
+                description:
+                    "Feature-rich smartwatch with health monitoring and fitness tracking",
+                price: 199.99,
+                image:
+                    "https://images.unsplash.com/photo-1523275335684-37898b6baf30?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
+            },
+            {
+                id: 3,
+                name: "Laptop Backpack",
+                description:
+                    "Durable laptop backpack with multiple compartments and water resistance",
+                price: 49.99,
+                image:
+                    "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"
+   
+            },
+            {
+                id: 4,
+                name: "Bluetooth Speaker",
+                description:
+                    "Portable bluetooth speaker with amazing sound quality and long battery life",
+                price: 79.99,
+                image:
+                    "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"
+            },
+        ];
+
+        //     try {
+        // const response = await fetch('../../db.json');
+        // if (!response.ok) throw new Error('Network response was not ok');
+        // const data = await response.json();
+        // const products = data.products.slice(0, 4);
 
         const container = document.getElementById("related-products-grid");
         if (!container) return;
         container.innerHTML = "";
 
-        products.forEach((product) => {
+        mockProducts.forEach((product) => {
             const productCard = document.createElement("div");
-            productCard.className =
-                "bg-white rounded-lg shadow-md overflow-hidden group";
+            productCard.className = "col";
             productCard.innerHTML = `
-                        <div class="relative">
-                            <img src="${product.image}" alt="${product.name
-                }" class="w-full h-48 object-cover transition-transform group-hover:scale-105">
-                        </div>
-                        <div class="p-4 flex flex-col">
-                            <h4 class="font-bold text-gray-800 truncate flex-grow">${product.name
-                }</h4>
-                            <p class="text-lg font-semibold text-gray-900 mt-2">${product.price.toFixed(
+                        <div class="card h-100 product-card">
+                            <img src="${product.image
+                }" class="card-img-top product-img" alt="${product.name
+                }">
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title">${product.name}</h5>
+                                <p class="card-text flex-grow-1">${product.description
+                }</p>
+                                <p class="card-text fw-bold fs-5">${product.price.toFixed(
                     2
                 )} EGP</p>
-                            <button class="add-to-cart-btn w-full mt-4 border-2 border-emerald-600 text-emerald-600 font-bold py-2 px-4 rounded-lg hover:bg-emerald-600 hover:text-white transition" data-id="${product.id
-                }"
+                                <button class="btn btn-outline-primary-custom add-to-cart-btn" 
+                                    data-id="${product.id}"
                                     data-name="${product.name}"
                                     data-price="${product.price}"
                                     data-image="${product.image}"
-                                    data-description="${product.description || ""
-                }">
-                                Add to Cart
-                            </button>
+                                    data-description="${product.description}">
+                                    Add to Cart
+                                </button>
+                            </div>
                         </div>
                     `;
             container.appendChild(productCard);
         });
 
         attachRelatedProductsListeners();
-        lucide.createIcons();
     } catch (error) {
         console.error("Failed to load related products:", error);
         const container = document.getElementById("related-products-grid");
         if (container)
             container.innerHTML =
-                "<p class='text-center text-red-500 col-span-4'>Could not load related products.</p>";
+                "<p class='text-center text-danger col-12'>Could not load related products.</p>";
     }
 }
 
 function attachRelatedProductsListeners() {
-    document
-        .querySelectorAll("#related-products-grid .add-to-cart-btn")
-        .forEach((button) => {
-            button.addEventListener("click", (event) => {
-                const productData = event.target.dataset;
-                const product = {
-                    id: parseInt(productData.id),
-                    name: productData.name,
-                    price: parseFloat(productData.price),
-                    image: productData.image,
-                    description: productData.description,
-                };
-                addProductToCart(product);
-            });
+    document.querySelectorAll(".add-to-cart-btn").forEach((button) => {
+        button.addEventListener("click", (event) => {
+            const productData = event.target.dataset;
+            const product = {
+                id: parseInt(productData.id),
+                name: productData.name,
+                price: parseFloat(productData.price),
+                image: productData.image,
+                description: productData.description,
+            };
+            addProductToCart(product);
         });
+    });
 }
 
-/* --- intialize the page ---*/
+/* --- initialize the page ---*/
 document.addEventListener("DOMContentLoaded", () => {
     cartContainer = document.getElementById("cart-items-container");
     subtotalEl = document.getElementById("summary-subtotal");
@@ -258,14 +312,20 @@ document.addEventListener("DOMContentLoaded", () => {
         if (productIdToDelete !== null) {
             removeProductFromCart(productIdToDelete);
             productIdToDelete = null;
-            confirmDialog.close();
+            const modal = bootstrap.Modal.getInstance(
+                document.getElementById("confirm-dialog")
+            );
+            modal.hide();
             renderCart();
         }
     });
 
     confirmCancelBtn.addEventListener("click", () => {
         productIdToDelete = null;
-        confirmDialog.close();
+        const modal = bootstrap.Modal.getInstance(
+            document.getElementById("confirm-dialog")
+        );
+        modal.hide();
     });
 
     renderCart();
