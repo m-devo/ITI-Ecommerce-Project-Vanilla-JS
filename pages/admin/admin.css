@@ -1,0 +1,66 @@
+@import url("../../assets/css/custom.css");
+/* Custom Font */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
+
+:root {
+    --primary: var(--bs-primary);
+    --primary-dark: var(--bs-warning);
+    --danger: #dc3545;
+    --danger-dark: #bb2d3b;
+}
+
+
+body {
+    background-color: #f8f9fa;
+}
+
+.nav-color, footer{
+    background-color: var(--primary);
+} 
+
+
+.search-expand {
+    transition: width 0.4s ease-in-out;
+}
+
+.search-expand:focus {
+    width: 400px !important;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+
+input.form-control.search-expand:focus {
+    width: 300px;
+}
+
+.stat-card {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+/* Users */
+.user-img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.action-btns .btn {
+    padding: 0.25rem 0.5rem;
+}
+
+
+.product-img {
+    height: 180px;
+    object-fit: cover;
+}
+/* Products */
+.product-pic{
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    margin-right: 1rem;
+}
