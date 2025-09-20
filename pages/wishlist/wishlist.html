@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Wishlist - TechStore</title>
+
+    <link rel="stylesheet" href="../../assets/css/custom.css" />
+    <link rel="stylesheet" href="../home/home.css" />
+    <link rel="stylesheet" href="wishlist.css" />
+  </head>
+  <body>
+    <!-- Navigation -->
+    <main-navbar active-link="Wishlist"></main-navbar>
+
+    <!-- Wishlist Header Section -->
+    <section class="wishlist-header">
+      <div class="container">
+        <div class="row">
+          <div class="col-12">
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb" class="mb-4">
+              <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                  <a href="../../home.html">
+                    <i class="fas fa-home me-1"></i>Home
+                  </a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">
+                  <i class="fas fa-heart me-1"></i>My Wishlist
+                </li>
+              </ol>
+            </nav>
+
+            <div class="page-title-section text-center">
+              <h1 class="display-4 fw-bold text-primary">
+                <i class="fas fa-heart me-3"></i>My Wishlist
+              </h1>
+              <p class="lead text-muted">Save your favorite items for later</p>
+              <div class="wishlist-stats mt-3">
+                <span
+                  class="badge bg-primary fs-6 px-3 py-2"
+                  id="wishlist-count"
+                >
+                  <i class="fas fa-heart me-2"></i>0 items
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Wishlist Content Section -->
+    <section class="wishlist-content py-5">
+      <div class="container">
+        <!-- Wishlist Actions Bar -->
+        <div class="wishlist-actions mb-4">
+          <div class="row align-items-center">
+            <div class="col-md-6">
+              <div class="d-flex align-items-center gap-3">
+                <button
+                  class="btn btn-outline-primary hidden"
+                  onclick="clearWishlist()"
+                  id="clear-wishlist-btn"
+                >
+                  <i class="fas fa-trash me-2"></i>Clear All
+                </button>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div
+                class="d-flex justify-content-md-end justify-content-start mt-3 mt-md-0"
+              >
+                <select
+                  class="form-select w-auto"
+                  id="wishlist-sort"
+                  aria-label="Sort wishlist"
+                >
+                  <option value="newest">Newest First</option>
+                  <option value="oldest">Oldest First</option>
+                  <option value="price-low">Price: Low to High</option>
+                  <option value="price-high">Price: High to Low</option>
+                  <option value="name">Name A-Z</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Wishlist Items Grid -->
+        <div id="wishlist-items-container" class="row g-4">
+          <!-- Wishlist items will be loaded here -->
+        </div>
+
+        <!-- Empty Wishlist State -->
+        <div id="empty-wishlist" class="text-center py-5 hidden">
+          <div class="empty-wishlist-icon mb-4">
+            <i class="fas fa-heart-broken text-muted"></i>
+          </div>
+          <h3 class="text-muted mb-3">Your wishlist is empty</h3>
+          <p class="text-muted mb-4">
+            Discover amazing products and add them to your wishlist by clicking
+            the heart icon.
+          </p>
+          <div class="d-flex justify-content-center gap-3">
+            <a href="../products/products.html" class="btn btn-primary btn-lg">
+              <i class="fas fa-shopping-bag me-2"></i>Start Shopping
+            </a>
+            <a href="../../home.html" class="btn btn-outline-primary btn-lg">
+              <i class="fas fa-home me-2"></i>Go Home
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <main-footer active-link="Wishlist"></main-footer>
+
+    <!-- Move to Cart Modal -->
+    <div
+      class="modal fade"
+      id="moveToCartModal"
+      tabindex="-1"
+      aria-labelledby="moveToCartModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="moveToCartModalLabel">Move to Cart</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <p>Select quantity to add to cart:</p>
+            <div class="d-flex align-items-center gap-3">
+              <label for="modal-quantity" class="form-label">Quantity:</label>
+              <div class="d-flex">
+                <button class="quantity-btn" onclick="decreaseModalQuantity()">
+                  -
+                </button>
+                <input
+                  type="number"
+                  class="quantity-input"
+                  id="modal-quantity"
+                  value="1"
+                  min="1"
+                />
+                <button class="quantity-btn" onclick="increaseModalQuantity()">
+                  +
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              id="confirm-move-to-cart"
+            >
+              <i class="fas fa-shopping-cart me-2"></i>Add to Cart
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../../assets/js/bootstrap.min.js"></script>
+    <script src="../../components/navbar.js" type="module"></script>
+    <script src="../../components/footer.js" type="module"></script>
+    <script src="../products/product.js"></script>
+    <script src="wishlist.js"></script>
+  </body>
+</html>
