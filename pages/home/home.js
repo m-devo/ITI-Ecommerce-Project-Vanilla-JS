@@ -5,7 +5,6 @@ let featuredProducts = [];
 // Shopping cart
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
-// DOM elements
 const productsContainer = document.getElementById("products-container");
 
 // Initialize the page
@@ -25,7 +24,7 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
-// Function to update all wishlist button states
+// update all wishlist button states
 function updateWishlistButtonStates() {
   if (typeof window.isInWishlist === "function") {
     const buttons = document.querySelectorAll(".wishlist-btn");
@@ -260,7 +259,6 @@ window.toggleWishlistSafely = function (product, buttonElement) {
     buttonElement.classList.toggle("active", window.isInWishlist(product.id));
     updateWishlistCount();
   } else {
-    // Retry after a short delay if functions aren't loaded yet
     setTimeout(() => {
       if (
         typeof window.toggleWishlist === "function" &&
