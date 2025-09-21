@@ -36,11 +36,14 @@ function getCartItemCount() {
 }
 
 function updateCartIcon() {
-    const cartIcon = document.getElementById("cart-item-count");
-    if (cartIcon) {
-        const count = getCartItemCount();
-        cartIcon.textContent = count;
-        cartIcon.style.display = count > 0 ? "flex" : "none";
+    const cartCount = getCart().reduce(
+        (total, item) => total + item.quantity,
+        0
+    );
+
+    const cartLink = document.querySelector('.navbar .nav-link[href*="cart"]');
+    if (cartLink) {
+        cartLink.innerHTML = `Cart (${cartCount}) <i class="fas fa-shopping-cart"></i>`;
     }
 }
 

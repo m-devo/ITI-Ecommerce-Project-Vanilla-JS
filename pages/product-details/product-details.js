@@ -1,22 +1,25 @@
 // Product details
+import { fetchProductById } from "../../data/products.js";
+
+let product = null;
+let productId = null;
+let currentCart = JSON.parse(localStorage.getItem("cart")) || [];
+
 document.addEventListener("DOMContentLoaded", function () {
+
   loadProductDetails();
 });
 
-function loadProductDetails() {
-  const productId = parseInt(localStorage.getItem("selectedProductId"));
+async function loadProductDetails() {
+  const params = new URLSearchParams(window.location.search);
 
-  if (!productId) {
-    window.location.href = "products.html";
-    return;
-  }
+  productId = params.get('id');
 
-  let product = null;
-  if (window.allProducts) {
-    product = window.allProducts.find((p) => p.id === productId);
-  } else if (window.products) {
-    product = window.products.find((p) => p.id === productId);
-  }
+  console.log("Product ID:", productId);
+
+  let product = await fetchProductById(productId);
+
+
 
   if (!product) {
     document.getElementById("product-detail-content").innerHTML = `
@@ -89,14 +92,12 @@ function loadProductDetails() {
                   </div>
                   
                   <div class="d-grid gap-2 d-md-block">
-                    <button class="btn btn-primary btn-lg me-2" onclick="addToCartFromDetails(${
-                      product.id
-                    })">
+                    <button class="btn btn-primary btn-lg me-2" onclick="addToCartFromDetails()">
                       <i class="fas fa-shopping-cart"></i> Add to Cart
                     </button>
-                    <button class="btn btn-buy-now btn-lg" onclick="buyNow(${
+                    <button class="btn btn-buy-now btn-lg" onclick="buyNow('${
                       product.id
-                    })">
+                    }')">
                       <i class="fas fa-bolt"></i> Buy Now
                     </button>
                   </div>
@@ -109,7 +110,7 @@ function loadProductDetails() {
   loadRelatedProducts(product);
 }
 
-function increaseDetailQuantity() {
+window.increaseDetailQuantity = function() {
   const qtyInput = document.getElementById("detail-qty");
   const maxStock = parseInt(qtyInput.max);
 
@@ -118,7 +119,7 @@ function increaseDetailQuantity() {
   }
 }
 
-function decreaseDetailQuantity() {
+window.decreaseDetailQuantity = function() {
   const qtyInput = document.getElementById("detail-qty");
 
   if (parseInt(qtyInput.value) > 1) {
@@ -126,45 +127,40 @@ function decreaseDetailQuantity() {
   }
 }
 
-function addToCartFromDetails(productId) {
-  let product = null;
-  if (window.allProducts) {
-    product = window.allProducts.find((p) => p.id === productId);
-  } else if (window.products) {
-    product = window.products.find((p) => p.id === productId);
-  }
-
-  if (!product) return;
-
+window.addToCartFromDetails = function () {
   const qtyInput = document.getElementById("detail-qty");
+
   const quantity = parseInt(qtyInput.value);
 
-  let cart = JSON.parse(localStorage.getItem("cart")) || [];
-  const existingItem = cart.find((item) => item.id === productId);
+  const finalQuantity = parseInt(quantity || 1);
+
+  const existingItem = currentCart.find((item) => item.id === productId);
 
   if (existingItem) {
-    existingItem.quantity += quantity;
+    existingItem.quantity += finalQuantity;
   } else {
-    cart.push({
-      ...product,
-      quantity: quantity,
+    currentCart.push({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.image,
+      quantity: finalQuantity,
     });
   }
 
-  localStorage.setItem("cart", JSON.stringify(cart));
-
-  qtyInput.value = 1;
-
-  if (typeof updateCartUI === "function") {
-    updateCartUI();
+  // Reset quantity input
+  if (qtyInput) {
+    qtyInput.value = 1;
   }
 
+  localStorage.setItem("cart", JSON.stringify(currentCart));
+  updateCartUI();
   showNotification(`${product.name} added to cart!`);
 }
 
 // to directly buy the product through the checkout page
 
-function buyNow(productId) {
+window.buyNow = function(productId) {
   addToCartFromDetails(productId);
   showNotification("Redirecting to checkout...");
 }
@@ -218,11 +214,6 @@ function loadRelatedProducts(currentProduct) {
     .join("");
 }
 
-function viewProductDetails(productId) {
-  localStorage.setItem("selectedProductId", productId);
-  window.location.reload();
-}
-
 function generateStars(rating) {
   const fullStars = Math.floor(rating);
   const hasHalfStar = rating % 1 !== 0;
@@ -253,6 +244,35 @@ function getCategoryName(category) {
   return categories[category] || category;
 }
 
+window.addToCart = function(productId, quantity = null) {
+
+  const qtyInput = document.getElementById(`qty-${productId}`);
+  const finalQuantity = quantity || parseInt(qtyInput?.value || 1);
+
+  const existingItem = currentCart.find((item) => item.id === productId);
+
+  if (existingItem) {
+    existingItem.quantity += finalQuantity;
+  } else {
+    currentCart.push({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.image,
+      quantity: finalQuantity,
+    });
+  }
+
+  // Reset quantity input
+  if (qtyInput) {
+    qtyInput.value = 1;
+  }
+
+  localStorage.setItem("cart", JSON.stringify(currentCart));
+  updateCartUI();
+  showNotification(`${product.name} added to cart!`);
+}
+
 function showNotification(message) {
   const notification = document.createElement("div");
   notification.className = "alert alert-success position-fixed";
@@ -271,3 +291,18 @@ function showNotification(message) {
     }
   }, 3000);
 }
+
+
+function updateCartUI() {
+  const cartCount = currentCart.reduce(
+    (total, item) => total + item.quantity,
+    0
+  );
+
+  const cartLink = document.querySelector('.navbar .nav-link[href*="cart"]');
+  if (cartLink) {
+    cartLink.innerHTML = `Cart (${cartCount}) <i class="fas fa-shopping-cart"></i>`;
+  }
+}
+
+updateCartUI();

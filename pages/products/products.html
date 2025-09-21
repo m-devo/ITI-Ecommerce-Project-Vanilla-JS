@@ -11,6 +11,28 @@
 
     <script src="../../components/navbar.js" type="module"></script>
     <script src="../../components/footer.js" type="module"></script>
+
+    <style>
+        .spinner {
+          width: 50px;
+          height: 50px;
+          border: 5px solid #f3f3f3; /* Light grey circle */
+          border-top: 5px solid var(--bs-primary);
+          border-radius: 50%;
+          animation: spin 1s linear infinite; 
+          margin: auto;
+        }
+
+        @keyframes spin {
+          0% {
+            transform: rotate(0deg);
+          }
+          100% {
+            transform: rotate(360deg);
+          }
+        }   
+    </style>
+      
   </head>
   <body>
     <main-navbar active-link="Products"></main-navbar>
@@ -59,7 +81,7 @@
                 id="sort-select"
                 title="Sort products"
               >
-                <option value="name">Sort by Name</option>
+                <option value="">No Sort</option>
                 <option value="price-low">Price: Low to High</option>
                 <option value="price-high">Price: High to Low</option>
                 <option value="rating">Rating</option>
@@ -91,12 +113,21 @@
           <p class="text-muted">Try adjusting your search or filters</p>
         </div>
       </div>
+
+      <div id="products-container">
+      </div>
+
+      
+      <div class="container">
+        <div class="spinner" style="display: none;"></div>
+      </div>
     </section>
 
     <main-footer active-link="Products"></main-footer>
 
     <script src="../../assets/js/bootstrap.min.js"></script>
-    <script src="../home/home.js"></script>
-    <script src="../products/product.js"></script>
+    <script src="../home/home.js" type="module"></script>
+    <!-- <script src="./app/home.js" type="module"></script> -->
+    <script src="../products/product.js" type="module"></script>
   </body>
 </html>
