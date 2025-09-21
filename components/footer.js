@@ -3,7 +3,7 @@ import { brandName, paths } from "../config/main.js";
 
 class MainFooter extends HTMLElement {
     connectedCallback() {
-        const activeLink = this.getAttribute("active-link").toLowerCase();
+        const activeLink = this.getAttribute("active-link") ? this.getAttribute("active-link").toLowerCase() : '';
 
         const navItemsHTML = paths.map(path => `
             <li class="list-inline-item me-3">
@@ -15,17 +15,17 @@ class MainFooter extends HTMLElement {
             <footer class="bg-light text-center py-3">
                 <div class="container">
                     <div class="row justify-content-between pt-5 align-items-center">
-                        <div class="col col-md-4">
+                        <div class="col-12 col-md-4">
                             <h4 class="active">
                             ${brandName}
                             </h4>
                         </div>
-                        <div class="col col-md-4">
+                        <div class="col-12 col-md-4">
                             <ul class="list-inline">
                                 ${navItemsHTML}
                             </ul>
                         </div>
-                        <div class="col col-md-4">
+                        <div class="col-12 col-md-4">
                             <ul class="list-inline">
                                 <li class="list-inline-item me-3">
                                     <a class="nav-link" href="#" aria-label="Facebook">

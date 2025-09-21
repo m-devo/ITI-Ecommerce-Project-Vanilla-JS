@@ -36,11 +36,14 @@ function getCartItemCount() {
 }
 
 function updateCartIcon() {
-    const cartIcon = document.getElementById("cart-item-count");
-    if (cartIcon) {
-        const count = getCartItemCount();
-        cartIcon.textContent = count;
-        cartIcon.style.display = count > 0 ? "flex" : "none";
+    const cartCount = getCart().reduce(
+        (total, item) => total + item.quantity,
+        0
+    );
+
+    const cartLink = document.querySelector('.navbar .nav-link[href*="cart"]');
+    if (cartLink) {
+        cartLink.innerHTML = `Cart (${cartCount}) <i class="fas fa-shopping-cart"></i>`;
     }
 }
 
@@ -331,4 +334,30 @@ document.addEventListener("DOMContentLoaded", () => {
     renderCart();
     updateCartIcon();
     loadRelatedProducts();
+    updateWishlistCount();
 });
+
+function updateWishlistCount() {
+  const count = getWishlist().length;
+  const countEl = document.getElementById("wishlist-count");
+  if (countEl)
+    countEl.innerHTML = `<i class="fas fa-heart me-2"></i>${count} ${
+      count === 1 ? "item" : "items"
+    }`;
+
+  const navWishlist = document.querySelector(
+    '.navbar .nav-link[href*="wishlist"]'
+  );
+  if (navWishlist) {
+    const icon = '<i class="fas fa-heart"></i>';
+    navWishlist.innerHTML = `Wishlist (${count}) ${icon}`;
+  }
+}
+
+function getWishlist() {
+  try {
+    return JSON.parse(localStorage.getItem("wishlist")) || [];
+  } catch {
+    return [];
+  }
+}
