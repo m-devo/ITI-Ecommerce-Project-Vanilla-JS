@@ -5,14 +5,14 @@ import {
     GoogleAuthProvider,
     GithubAuthProvider,
     signInWithPopup
-} from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
+} from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
 import {
     setDoc,
     doc,
     getDoc
-} from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
-import { sendPasswordResetEmail } 
-from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
+} from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+import { sendPasswordResetEmail }
+    from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
 
 const registerForm = document.getElementById('registerForm');
 const loginForm = document.getElementById('loginForm');
@@ -22,7 +22,7 @@ function getErrorMessage(error) {
     switch (error.code) {
         // ===== Email & Password Errors =====
         case "auth/email-already-in-use":
-            return "This email is already registered.";
+            return "This email is already registered before.";
         case "auth/weak-password":
             return "Password should be at least 6 characters.";
         case "auth/invalid-email":
@@ -70,9 +70,12 @@ if (registerForm) {
 
         if (password !== confirmPass) {
             errorMessageDiv.innerText = "Passwords do not match.";
+            errorMessageDiv.style.display = "block";
             document.getElementById('password').value = "";
             document.getElementById('confirmPassword').value = "";
             return;
+        } else {
+            errorMessageDiv.style.display = "none";
         }
 
         try {
@@ -80,8 +83,8 @@ if (registerForm) {
             const user = userCredential.user;
 
             await setDoc(doc(db, "users", user.uid), {
-                first_name: Fname,
-                last_name: Lname,
+                fname: Fname,
+                lname: Lname,
                 email: email,
                 phone: phone,
                 role: 'user',
@@ -89,10 +92,12 @@ if (registerForm) {
             });
 
             errorMessageDiv.innerText = "";
-            window.location.href = '../index.html';
+            errorMessageDiv.style.display = "none";
+            window.location.href = "../../index.html";
 
         } catch (error) {
             errorMessageDiv.innerText = getErrorMessage(error);
+            errorMessageDiv.style.display = "block";
             console.error("Error during registration: ", error);
         }
     });
@@ -110,10 +115,12 @@ if (loginForm) {
             await signInWithEmailAndPassword(auth, email, password);
 
             errorMessageDiv.innerText = "";
-            window.location.href = '../index.html';
+            errorMessageDiv.style.display = "none";
+            window.location.href = '../../index.html';
 
         } catch (error) {
             errorMessageDiv.innerText = getErrorMessage(error);
+            errorMessageDiv.style.display = "block";
             console.error("Error during login: ", error);
         }
     });
@@ -128,25 +135,26 @@ async function handleSocialLogin(provider) {
         const result = await signInWithPopup(auth, provider);
         const user = result.user;
 
-        
+
         const userRef = doc(db, "users", user.uid);
         const userSnap = await getDoc(userRef);
 
         if (!userSnap.exists()) {
-            
+
             await setDoc(userRef, {
-                first_name: user.displayName ? user.displayName.split(" ")[0] : "",
-                last_name: user.displayName ? user.displayName.split(" ").slice(1).join(" ") : "",
+                fname: user.displayName ? user.displayName.split(" ")[0] : "",
+                lname: user.displayName ? user.displayName.split(" ").slice(1).join(" ") : "",
                 email: user.email,
                 phone: user.phoneNumber || "",
                 role: 'user',
                 createdAt: new Date()
             });
         }
-
-        window.location.href = '../index.html';
+        errorMessageDiv.style.display = "none";
+        window.location.href = '../../index.html';
     } catch (error) {
         errorMessageDiv.innerText = getErrorMessage(error);
+        errorMessageDiv.style.display = "block";
         console.error("Error during social login:", error);
     }
 }
