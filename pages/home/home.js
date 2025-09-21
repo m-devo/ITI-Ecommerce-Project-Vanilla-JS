@@ -13,7 +13,6 @@ document.addEventListener("DOMContentLoaded", function () {
   displayFeaturedProducts();
   updateCartUI();
 
-  // Initialize wishlist count with a delay to ensure wishlist.js is loaded
   setTimeout(() => {
     updateWishlistCount();
     updateWishlistButtonStates();
