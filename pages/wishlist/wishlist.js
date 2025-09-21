@@ -37,8 +37,6 @@ function renderWishlist() {
   const emptyState = document.getElementById("empty-wishlist");
   const clearBtn = document.getElementById("clear-wishlist-btn");
 
-
-
   if (!container) return;
 
   let list = getWishlist();
@@ -123,20 +121,21 @@ function renderWishlist() {
 }
 
 function isInWishlist(id) {
-  return getWishlist().some((p) => p.id === id);
+  return getWishlist().some((p) => p.id == id);
 }
 
 function addToWishlist(product) {
   if (!product || typeof product.id === "undefined") return;
   const list = getWishlist();
-  if (!list.some((p) => p.id === product.id)) {
+  if (!list.some((p) => p.id == product.id)) {
+    // Use == for loose comparison
     list.push({ ...product, addedAt: Date.now() });
     setWishlist(list);
   }
 }
 
 function removeFromWishlist(id) {
-  const list = getWishlist().filter((p) => p.id !== id);
+  const list = getWishlist().filter((p) => p.id != id);
   setWishlist(list);
   renderWishlist();
 }
@@ -242,5 +241,7 @@ window.openMoveToCart = openMoveToCart;
 window.increaseModalQuantity = increaseModalQuantity;
 window.decreaseModalQuantity = decreaseModalQuantity;
 window.updateWishlistCount = updateWishlistCount;
+window.isInWishlist = isInWishlist;
+window.getWishlist = getWishlist;
 
 updateWishlistCount();
