@@ -24,7 +24,20 @@ async function displayFeaturedProducts() {
       (product) => `
     <div class="col-md-6 col-lg-4">
       <div class="product-card" onclick="viewProductDetails(${product.id})">
-        <img src="${product.image}" alt="${product.name}" class="product-image">
+        <div class="position-relative">
+          <img src="${product.image}" alt="${
+        product.name
+      }" class="product-image">
+          <button class="wishlist-btn position-absolute top-0 end-0 m-2" title="Add to wishlist" onclick="event.stopPropagation(); toggleWishlist({ id: ${
+            product.id
+          }, name: '${product.name.replace(/'/g, "&#39;")}', price: ${
+        product.price
+      }, image: '${product.image.replace(/'/g, "&#39;")}', rating: ${
+        product.rating
+      } }); this.classList.toggle('active', isInWishlist(${product.id}));">
+            <i class="fas fa-heart"></i>
+          </button>
+        </div>
         <div class="product-info">
           <h5 class="product-title">${product.name}</h5>
           <p class="product-description">${product.description}</p>
@@ -59,9 +72,21 @@ async function displayFeaturedProducts() {
   `
     )
     .join("");
+
+  try {
+    const buttons = productsContainer.querySelectorAll(".wishlist-btn");
+    buttons.forEach((btn) => {
+      const match = btn.getAttribute("onclick");
+      const idMatch = match && match.match(/isInWishlist\((\d+)\)/);
+      const id = idMatch ? parseInt(idMatch[1]) : null;
+      if (id && typeof isInWishlist === "function") {
+        btn.classList.toggle("active", isInWishlist(id));
+      }
+    });
+  } catch {}
 }
 
-// Generate star rating
+// Generate  rating
 function generateStars(rating) {
   const fullStars = Math.floor(rating);
   const hasHalfStar = rating % 1 !== 0;
@@ -124,7 +149,6 @@ window.addToCart = function(productId) {
   // Reset quantity input
   qtyInput.value = 1;
 
-  // Save to localStorage
   localStorage.setItem("cart", JSON.stringify(cart));
 
   // Update cart UI
@@ -175,3 +199,12 @@ function showNotification(message) {
     }
   }, 3000);
 }
+
+// View product details
+function viewProductDetails(productId) {
+  localStorage.setItem("selectedProductId", productId);
+  window.location.href = "/pages/product-details/product-details.html";
+}
+
+window.products = products;
+window.cart = cart;

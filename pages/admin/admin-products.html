@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products Management</title>
+
+    <link rel="stylesheet" href="./admin.css">
+    <link rel="stylesheet" href="../../assets/css/all.min.css">
+    <link rel="stylesheet" href="../../assets/css/custom.css">
+</head>
+
+<body>
+    <header>
+        <div class="px-3 py-2 text-white nav-color">
+            <div class="container">
+                <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+                    <a href="admin-dashboard.html"
+                        class="d-flex align-items-center my-2 my-lg-0 me-lg-auto text-white text-decoration-none">
+                        <i class="fas fa-cogs fa-2x me-2"></i>
+                        <span class="fs-4">Admin Panel</span>
+                    </a>
+                    <ul class="nav col-12 col-lg-auto my-2 justify-content-center my-md-0 text-small">
+                        <li><a href="../../index.html" class="nav-link text-white text-center"><i
+                                    class="fas fa-home d-block mx-auto mb-1 fs-4"></i>Home</a></li>
+                        <li><a href="admin-dashboard.html" class="nav-link text-white text-center"><i
+                                    class="fas fa-tachometer-alt d-block mx-auto mb-1 fs-4"></i>Dashboard</a></li>
+                        <li><a href="admin-orders.html" class="nav-link text-white text-center"><i
+                                    class="fas fa-table d-block mx-auto mb-1 fs-4"></i>Orders</a></li>
+                        <li><a href="admin-products.html" class="nav-link text-secondary text-center"><i
+                                    class="fas fa-box d-block mx-auto mb-1 fs-4"></i>Products</a></li>
+                        <li><a href="admin-users.html" class="nav-link text-white text-center"><i
+                                    class="fas fa-users d-block mx-auto mb-1 fs-4"></i>Users</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="px-3 py-2 border-bottom bg-light">
+            <div class="container d-flex flex-wrap justify-content-center">
+                <form class="col-12 col-lg-auto mb-2 mb-lg-0 me-lg-auto">
+                    <input type="search" class="form-control search-expand" placeholder="Search products..."
+                        aria-label="Search">
+                </form>
+                <div class="dropdown text-end">
+                    <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle" data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                        <img src="https://marketplace.canva.com/Oks3A/MAFG-_Oks3A/1/tl/canva-person-icon-avatar-MAFG-_Oks3A.png"
+                            alt="profile-img" width="32" height="32" class="rounded-circle">
+                    </a>
+                    <ul class="dropdown-menu text-small">
+                        <li><a class="dropdown-item" href="#"><i class="fas fa-user-circle me-2"></i> Profile</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i> Settings</a></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li><a class="dropdown-item text-danger" href="#"><i class="fas fa-sign-out-alt me-2"></i>
+                                Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container my-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h3 mb-0">Products</h1>
+                <p class="text-muted mb-0">Manage All Products</p>
+            </div>
+            <a href="#" class="btn btn-primary"><i class="fas fa-plus me-2"></i> Add New Product</a>
+        </div>
+
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th scope="col">Product</th>
+                                <th scope="col">SKU</th>
+                                <th scope="col">Category</th>
+                                <th scope="col">Stock</th>
+                                <th scope="col">Price</th>
+                                <th scope="col" class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSj9zTsUw9GLhneuaoFGKsx3WAzZc9qE1SK_w&s"
+                                            class="rounded product-pic" alt="Laptop">
+                                        <span class="fw-bold">Laptop</span>
+                                    </div>
+                                </td>
+                                <td>A-A36f</td>
+                                <td>Electronics</td>
+                                <td><span class="badge bg-success">In Stock</span></td>
+                                <td>500 EGP</td>
+                                <td class="text-end">
+                                    <div class="btn-group">
+                                        <button class="btn btn-sm btn-outline-warning" title="Edit"><i
+                                                class="fas fa-edit"></i></button>
+                                        <button class="btn btn-sm btn-outline-danger" title="Delete"><i
+                                                class="fas fa-trash"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="https://www.lapcare.com/cdn/shop/files/1_6122ca29-5373-4c4f-97c2-0728ea368fc1.webp?v=1757326029&width=2048"
+                                            class="rounded product-pic" alt="Headphone">
+                                        <span class="fw-bold">Headphone</span>
+                                    </div>
+                                </td>
+                                <td>A-A36f</td>
+                                <td>Electronics</td>
+                                <td><span class="badge bg-danger">Out of Stock</span></td>
+                                <td>500 EGP</td>
+                                <td class="text-end">
+                                    <div class="btn-group">
+                                        <button class="btn btn-sm btn-outline-warning" title="Edit"><i
+                                                class="fas fa-edit"></i></button>
+                                        <button class="btn btn-sm btn-outline-danger" title="Delete"><i
+                                                class="fas fa-trash"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="https://2b.com.eg/media/catalog/product/cache/661473ab953cdcdf4c3b607144109b90/w/t/wt567-min.jpg"
+                                            class="rounded product-pic" alt="Smartwatch">
+                                        <span class="fw-bold">Smart Watch</span>
+                                    </div>
+                                </td>
+                                <td>A-A36f</td>
+                                <td>Electronics</td>
+                                <td><span class="badge bg-success">In Stock</span></td>
+                                <td>500 EGP</td>
+                                <td class="text-end">
+                                    <div class="btn-group">
+                                        <button class="btn btn-sm btn-outline-warning" title="Edit"><i
+                                                class="fas fa-edit"></i></button>
+                                        <button class="btn btn-sm btn-outline-danger" title="Delete"><i
+                                                class="fas fa-trash"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <nav aria-label="Page navigation" class="mt-4 d-flex justify-content-center">
+            <ul class="pagination">
+                <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
+                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item"><a class="page-link" href="#">Next</a></li>
+            </ul>
+        </nav>
+    </main>
+
+    <footer class="text-white text-center py-3 mt-auto">
+        &copy; 2025 Tech Cave  | <a href="#" class="text-white-50">Privacy Policy</a> | <a href="#"
+            class="text-white-50">Terms</a>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="./admin.js"></script>
+</body>
+
+</html>

@@ -165,6 +165,15 @@ function displayProductsHTML(allProducts) {
                   ? '<div class="product-badge">Low Stock</div>'
                   : ""
               }
+              <button class="wishlist-btn position-absolute top-0 end-0 m-2" title="Add to wishlist" onclick="event.stopPropagation(); toggleWishlist({ id: ${
+                product.id
+              }, name: '${product.name.replace(/'/g, "&#39;")}', price: ${
+        product.price
+      }, image: '${product.image.replace(/'/g, "&#39;")}', rating: ${
+        product.rating
+      } }); this.classList.toggle('active', isInWishlist(${product.id}));">
+                <i class="fas fa-heart"></i>
+              </button>
             </div>
             <div class="product-info">
               <h5 class="product-name">${product.name}</h5>
@@ -201,23 +210,18 @@ function displayProductsHTML(allProducts) {
     })
     .join("");
 
-}
-
-
-async function displayProducts() {
-  const products = await fetchAllProducts(currentFilters);
-
-
-
-  allProducts = products.products;
-  currentFilters.lastVisible = products.lastVisible; 
-
-  console.log(products);
-
-  displayProductsHTML(allProducts);
-  setupPagination();
-  
-  console.log(allProducts)
+  // After render, sync wishlist active state
+  try {
+    const buttons = container.querySelectorAll(".wishlist-btn");
+    buttons.forEach((btn) => {
+      const match = btn.getAttribute("onclick");
+      const idMatch = match && match.match(/isInWishlist\((\d+)\)/);
+      const id = idMatch ? parseInt(idMatch[1]) : null;
+      if (id && typeof isInWishlist === "function") {
+        btn.classList.toggle("active", isInWishlist(id));
+      }
+    });
+  } catch {}
 }
 
 function setupPagination() {
