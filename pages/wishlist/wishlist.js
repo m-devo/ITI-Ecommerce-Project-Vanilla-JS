@@ -6,6 +6,8 @@ function getWishlist() {
   }
 }
 
+let currentCart = JSON.parse(localStorage.getItem("cart")) || [];
+
 function setWishlist(list) {
   localStorage.setItem("wishlist", JSON.stringify(list));
   window.dispatchEvent(
@@ -34,6 +36,8 @@ function renderWishlist() {
   const container = document.getElementById("wishlist-items-container");
   const emptyState = document.getElementById("empty-wishlist");
   const clearBtn = document.getElementById("clear-wishlist-btn");
+
+
 
   if (!container) return;
 
@@ -114,6 +118,8 @@ function renderWishlist() {
   }
 
   updateWishlistCount();
+
+  updateCartUI();
 }
 
 function isInWishlist(id) {
@@ -216,6 +222,18 @@ document.addEventListener("DOMContentLoaded", () => {
   attachModalConfirm();
 });
 
+function updateCartUI() {
+  const cartCount = currentCart.reduce(
+    (total, item) => total + item.quantity,
+    0
+  );
+
+  const cartLink = document.querySelector('.navbar .nav-link[href*="cart"]');
+  if (cartLink) {
+    cartLink.innerHTML = `Cart (${cartCount}) <i class="fas fa-shopping-cart"></i>`;
+  }
+}
+
 window.addToWishlist = addToWishlist;
 window.removeFromWishlist = removeFromWishlist;
 window.toggleWishlist = toggleWishlist;
@@ -224,3 +242,5 @@ window.openMoveToCart = openMoveToCart;
 window.increaseModalQuantity = increaseModalQuantity;
 window.decreaseModalQuantity = decreaseModalQuantity;
 window.updateWishlistCount = updateWishlistCount;
+
+updateWishlistCount();

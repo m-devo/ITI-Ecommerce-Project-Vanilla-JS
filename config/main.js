@@ -2,7 +2,7 @@ export const brandName = "TechCave";
 
 const origin = window.location.origin;
 const projectFolder = window.location.pathname.split('/')[1];
-const basePath = `${origin}/${projectFolder}`;
+export const basePath = `${origin}/${projectFolder}`;
 
 export const homePath = `${basePath}/index.html`;
 

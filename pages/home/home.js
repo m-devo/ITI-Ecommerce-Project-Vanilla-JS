@@ -12,18 +12,26 @@ const productsContainer = document.getElementById("products-container");
 document.addEventListener("DOMContentLoaded", function () {
   displayFeaturedProducts();
   updateCartUI();
+
+  updateWishlistCount();
 });
+
 
 // Display featured products (first 9)
 async function displayFeaturedProducts() {
 
   featuredProducts = await fetchFeaturedProducts();
 
+
+
+  console.log(featuredProducts);
+
+
   productsContainer.innerHTML = featuredProducts
     .map(
       (product) => `
     <div class="col-md-6 col-lg-4">
-      <div class="product-card" onclick="viewProductDetails(${product.id})">
+      <div class="product-card" onclick="viewProductDetails('${product.id}')">
         <div class="position-relative">
           <img src="${product.image}" alt="${
         product.name
@@ -201,10 +209,28 @@ function showNotification(message) {
 }
 
 // View product details
-function viewProductDetails(productId) {
-  localStorage.setItem("selectedProductId", productId);
-  window.location.href = "/pages/product-details/product-details.html";
+window.viewProductDetails = function(productId) {
+  window.location.href = "./pages/product-details/product-details.html?id=" + productId;
 }
 
-window.products = products;
+
+function updateWishlistCount() {
+  const count = getWishlist().length;
+  const countEl = document.getElementById("wishlist-count");
+  if (countEl)
+    countEl.innerHTML = `<i class="fas fa-heart me-2"></i>${count} ${
+      count === 1 ? "item" : "items"
+    }`;
+
+  const navWishlist = document.querySelector(
+    '.navbar .nav-link[href*="wishlist"]'
+  );
+  if (navWishlist) {
+    const icon = '<i class="fas fa-heart"></i>';
+    navWishlist.innerHTML = `Wishlist (${count}) ${icon}`;
+  }
+}
+
+
+
 window.cart = cart;

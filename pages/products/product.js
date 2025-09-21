@@ -19,6 +19,13 @@ let currentCart = JSON.parse(localStorage.getItem("cart")) || [];
 
 document.addEventListener("DOMContentLoaded", function () {
   initProductsPage();
+
+  // Setup cart functionality
+  updateCartUI();
+
+  // Setup wishlist functionality
+  updateWishlistCount();
+
 });
 
 function initProductsPage() {
@@ -33,9 +40,6 @@ function initProductsPage() {
 
   // Load products
   applyFilters();
-
-  // Setup cart functionality
-  updateCartUI();
 
   setupPagination();
 }
@@ -165,9 +169,9 @@ function displayProductsHTML(allProducts) {
                   ? '<div class="product-badge">Low Stock</div>'
                   : ""
               }
-              <button class="wishlist-btn position-absolute top-0 end-0 m-2" title="Add to wishlist" onclick="event.stopPropagation(); toggleWishlist({ id: ${
+              <button class="wishlist-btn position-absolute top-0 end-0 m-2" title="Add to wishlist" onclick="event.stopPropagation(); toggleWishlist({ id: '${
                 product.id
-              }, name: '${product.name.replace(/'/g, "&#39;")}', price: ${
+              }', name: '${product.name.replace(/'/g, "&#39;")}', price: ${
         product.price
       }, image: '${product.image.replace(/'/g, "&#39;")}', rating: ${
         product.rating
@@ -365,11 +369,49 @@ function updateCartUI() {
   }
 }
 
+
+async function displayProducts() {
+  const products = await fetchAllProducts(currentFilters);
+
+
+
+  allProducts = products.products;
+  currentFilters.lastVisible = products.lastVisible; 
+
+  console.log(products);
+
+  displayProductsHTML(allProducts);
+  setupPagination();
+  
+  console.log(allProducts)
+}
+
+window.loadMoreProducts = async () => {
+
+  let loadMoreBtn = document.querySelector(".load-more-btn");
+  let spinner = document.querySelector(".spinner");
+
+  loadMoreBtn.style.display = "none";
+  spinner.style.display = "block";
+
+    
+  let moreProducts = await fetchAllProducts(currentFilters);
+
+  spinner.style.display = "none";
+  loadMoreBtn.style.display = "block";
+
+  allProducts = [...allProducts, ...moreProducts.products];
+  currentFilters.lastVisible = moreProducts.lastVisible;
+
+  displayProductsHTML(allProducts);
+
+}
+
 // View product details
 window.viewProductDetails = function viewProductDetails(productId) {
   // Store the selected product ID for the details page
   // Navigate to product details page
-  window.location.href = "../product-details.html?id=" + productId;
+  window.location.href = "../product-details/product-details.html?id=" + productId;
 }
 
 // Show notification
@@ -390,6 +432,32 @@ function showNotification(message) {
       notification.remove();
     }
   }, 3000);
+}
+
+function getWishlist() {
+  try {
+    return JSON.parse(localStorage.getItem("wishlist")) || [];
+  } catch {
+    return [];
+  }
+}
+
+function updateWishlistCount() {
+  console.log("updateWishlistCount");
+  const count = getWishlist().length;
+  const countEl = document.getElementById("wishlist-count");
+  if (countEl)
+    countEl.innerHTML = `<i class="fas fa-heart me-2"></i>${count} ${
+      count === 1 ? "item" : "items"
+    }`;
+
+  const navWishlist = document.querySelector(
+    '.navbar .nav-link[href*="wishlist"]'
+  );
+  if (navWishlist) {
+    const icon = '<i class="fas fa-heart"></i>';
+    navWishlist.innerHTML = `Wishlist (${count}) ${icon}`;
+  }
 }
 
 // Make products available globally

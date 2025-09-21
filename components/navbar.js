@@ -1,9 +1,13 @@
-import { brandName, paths , homePath } from "../config/main.js";
+import { brandName, paths , homePath , basePath} from "../config/main.js";
 
 console.log(paths);
 
 class MainNavbar extends HTMLElement {
     connectedCallback() {
+        let currentCart = JSON.parse(localStorage.getItem("cart")) || [];
+
+        let wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
+
         const activeLink = this.getAttribute("active-link") ? this.getAttribute("active-link").toLowerCase() : '';
 
         const navItemsHTML = paths.map(path => `
@@ -27,9 +31,52 @@ class MainNavbar extends HTMLElement {
                             ${navItemsHTML}
                         </ul>
                     </div>
+
+                    <div class="dropdown">
+                    <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Account
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="${basePath}/pages/auth/login.html">Login</a></li>
+                        <li><a class="dropdown-item" href="${basePath}/pages/auth/Register.html">Register</a></li>
+                    </ul>
+                    </div>
                 </div>
             </nav>
         `;
+
+
+        (function updateCartUI() {
+            const cartCount = currentCart.reduce(
+                (total, item) => total + item.quantity,
+                0
+            );
+
+            const cartLink = document.querySelector('.navbar .nav-link[href*="cart"]');
+            if (cartLink) {
+                cartLink.innerHTML = `Cart (${cartCount}) <i class="fas fa-shopping-cart"></i>`;
+            }
+        })();
+
+        (function updateWishlistCount() {
+            console.log("updateWishlistCount");
+            const count = wishlist.length;
+            const countEl = document.getElementById("wishlist-count");
+            if (countEl)
+                countEl.innerHTML = `<i class="fas fa-heart me-2"></i>${count} ${
+                count === 1 ? "item" : "items"
+                }`;
+
+            const navWishlist = document.querySelector(
+                '.navbar .nav-link[href*="wishlist"]'
+            );
+            if (navWishlist) {
+                const icon = '<i class="fas fa-heart"></i>';
+                navWishlist.innerHTML = `Wishlist (${count}) ${icon}`;
+            }
+        })();
+
+
     }
 }
 

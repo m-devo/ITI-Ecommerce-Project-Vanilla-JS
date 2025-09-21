@@ -110,3 +110,23 @@ h6,
 .wishlist-btn.active {
   color: #dc3545;
 }
+
+.btn-primary {
+  background-color: var(--bs-primary);
+  border-color: var(--bs-primary);
+  border-radius: 0.25rem; /* Less rounded corners */
+  font-weight: bold;
+}
+
+.btn-primary:hover {
+  background-color: #5a349b; /* A darker purple */
+  border-color: #5a349b;
+}
+
+.btn.show {
+    background-color: var(--bs-primary);
+  border-color: var(--bs-primary);
+  border-radius: 0.25rem; /* Less rounded corners */
+  font-weight: bold;
+
+}

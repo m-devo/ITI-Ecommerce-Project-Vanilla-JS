@@ -21,62 +21,62 @@ export async function fetchAllProducts({
 }) {
   try {
     const productsCollection = collection(db, "products");
-
-    // console.log(productsCollection);
-    
     const queryConstraints = [];
 
+    // Category and Search filters remain the same
     if (category) {
       queryConstraints.push(where("category", "==", category));
     }
 
-    // Handle search and sorting logic in a unified way
     if (search) {
       const searchTerm = search.toLowerCase();
       queryConstraints.push(where("name_lowercase", ">=", searchTerm));
       queryConstraints.push(where("name_lowercase", "<=", searchTerm + "\uf8ff"));
-      queryConstraints.push(orderBy("name_lowercase")); 
-
-      console.log(`Searching for: ${searchTerm} and ending at: ${searchTerm + "\uf8ff"}` );
-    } else if (sort) {
-
-      if (sort === "price-high" ) {
-          queryConstraints.push(orderBy("price", "desc"));
-      } else if (sort === "price-low") {
-          queryConstraints.push(orderBy("price", "asc"));
-      } else if (sort === "rating") {
-          queryConstraints.push(orderBy("rating", "desc"));
+      queryConstraints.push(orderBy("name_lowercase"));
+    } 
+    
+    if (sort && !search) { 
+      if (sort === "price-high") {
+        queryConstraints.push(orderBy("price", "desc"));
+      }
+      if (sort === "price-low") {
+        queryConstraints.push(orderBy("price", "asc"));
+      }
+      if (sort === "rating") {
+        queryConstraints.push(orderBy("rating", "desc"));
       }
     }
 
-
-    
-    // pagination
     if (lastVisible) {
       queryConstraints.push(startAfter(lastVisible));
     }
     
-    // Limit 8 products per once
     queryConstraints.push(limit(limitPerPage));
 
-    // Construct the final query
     const q = query(productsCollection, ...queryConstraints);
-    
     const querySnapshot = await getDocs(q);
 
-    const products = querySnapshot.docs.map((doc) => ({
+    let products = querySnapshot.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
     }));
 
-    // Get the last document for the next page's cursor
+    // If there was a search and a sort, we sort the results here
+    if (search && sort) {
+      products.sort((a, b) => {
+        if (sort === 'price-high') return b.price - a.price;
+        if (sort === 'price-low') return a.price - b.price;
+        if (sort === 'rating') return b.rating - a.rating;
+        return 0;
+      });
+    }
+
     const newLastVisible = querySnapshot.docs.length > 0 ? querySnapshot.docs[querySnapshot.docs.length - 1] : null;
 
     return { products, lastVisible: newLastVisible };
+
   } catch (error) {
-    console.error("Error fetching products:", error);
-    alert("An error occurred while fetching products. You might need to create a Firestore index. Check the console for details.");
-    return { products: [], lastVisible: null };
+    console.error("Error fetching products: ", error);
   }
 }
 
@@ -104,6 +104,8 @@ export async function fetchFeaturedProducts() {
       id: doc.id, 
       ...doc.data()
     }));
+
+    console.log("f p ", productsList);
     
     return productsList;
 
@@ -116,6 +118,9 @@ export async function fetchProductById(productId) {
   try {
     const productRef = doc(db, "products", productId);
     const productDoc = await getDoc(productRef);
+
+    console.log(productDoc);
+
     if (productDoc.exists()) {
       return { id: productDoc.id, ...productDoc.data() };
     } else {
