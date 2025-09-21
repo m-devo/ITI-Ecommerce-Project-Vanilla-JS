@@ -1,8 +1,10 @@
 import { brandName, paths , homePath } from "../config/main.js";
 
+console.log(paths);
+
 class MainNavbar extends HTMLElement {
     connectedCallback() {
-        const activeLink = this.getAttribute("active-link").toLowerCase();
+        const activeLink = this.getAttribute("active-link") ? this.getAttribute("active-link").toLowerCase() : '';
 
         const navItemsHTML = paths.map(path => `
             <li class="nav-item">

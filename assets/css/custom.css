@@ -54,7 +54,6 @@ h6,
 }
 
 .active {
-    font-weight: 600;
     color: var(--bs-primary) !important;
 }
 
@@ -86,14 +85,10 @@ h6,
 
 .navbar-nav .nav-link:hover,
 .navbar-nav .nav-link.active {
-    background: #b0ff50;
-    color: #222 !important;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    font-weight: bold;
+    background: var(--bs-primary);
 }
 
-.navbar-toggler {
-    border: none;
-    outline: none;
+.btn.active, .btn:hover {
+    background: var(--bs-primary) !important;
+    color: #fff !important;
 }
-
