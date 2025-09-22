@@ -115,7 +115,9 @@ async function displayFeaturedProducts() {
         btn.classList.toggle("active", isInWishlist(id));
       }
     });
-  } catch {}
+  } catch {
+    console.warn("Wishlist functions not loaded yet");
+  }
 }
 
 // Generate  rating
