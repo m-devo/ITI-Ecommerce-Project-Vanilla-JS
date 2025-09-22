@@ -3,8 +3,10 @@ import {
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
     GoogleAuthProvider,
-    GithubAuthProvider,
-    signInWithPopup
+    signInWithPopup,
+    setPersistence,
+    browserLocalPersistence,
+    browserSessionPersistence
 } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
 import {
     setDoc,
@@ -31,6 +33,8 @@ function getErrorMessage(error) {
             return "No account found with this email.";
         case "auth/wrong-password":
             return "Incorrect password.";
+        case "auth/invalid-login-credentials":
+            return "Incorrect email or password.";
         case "auth/network-request-failed":
             return "Network error. Please check your connection.";
 
@@ -93,7 +97,7 @@ if (registerForm) {
 
             errorMessageDiv.innerText = "";
             errorMessageDiv.style.display = "none";
-            window.location.href = "../../index.html";
+            window.location.replace('../../index.html');
 
         } catch (error) {
             errorMessageDiv.innerText = getErrorMessage(error);
@@ -103,22 +107,33 @@ if (registerForm) {
     });
 }
 
-// ========= Login with Email/Password =========
+// ========= Login with Email/Password & Remember Me =========
 if (loginForm) {
-    loginForm.addEventListener('submit', async (e) => {
+    loginForm.addEventListener("submit", async (e) => {
         e.preventDefault();
 
-        const email = document.getElementById('login-email').value.trim();
-        const password = document.getElementById('login-password').value.trim();
+        const email = document.getElementById("login-email").value.trim();
+        const password = document.getElementById("login-password").value.trim();
+        const rememberMeCheckbox = document.getElementById("rememberMe");
 
         try {
+
+            const persistenceType = rememberMeCheckbox.checked
+                ? browserLocalPersistence
+                : browserSessionPersistence;
+
+            await setPersistence(auth, persistenceType);
+
+
             await signInWithEmailAndPassword(auth, email, password);
+
 
             errorMessageDiv.innerText = "";
             errorMessageDiv.style.display = "none";
-            window.location.href = '../../index.html';
+            window.location.replace('../../index.html');
 
         } catch (error) {
+            console.log("Firebase Error:", error);
             errorMessageDiv.innerText = getErrorMessage(error);
             errorMessageDiv.style.display = "block";
             console.error("Error during login: ", error);
@@ -126,9 +141,9 @@ if (loginForm) {
     });
 }
 
-// ========= Google & GitHub Sign-in =========
+// ========= Google Sign-in =========
 const googleBtn = document.querySelector('.google-btn');
-const githubBtn = document.querySelector('.github-btn');
+
 
 async function handleSocialLogin(provider) {
     try {
@@ -151,7 +166,7 @@ async function handleSocialLogin(provider) {
             });
         }
         errorMessageDiv.style.display = "none";
-        window.location.href = '../../index.html';
+        window.location.replace('../../index.html');
     } catch (error) {
         errorMessageDiv.innerText = getErrorMessage(error);
         errorMessageDiv.style.display = "block";
@@ -166,15 +181,10 @@ if (googleBtn) {
     });
 }
 
-if (githubBtn) {
-    githubBtn.addEventListener('click', () => {
-        const provider = new GithubAuthProvider();
-        handleSocialLogin(provider);
-    });
-}
 
 
-// ========= Forgot Password =========
+
+// ========= Forgot password =========
 const forgotLink = document.querySelector('.remember-forgot a');
 
 if (forgotLink) {
@@ -193,3 +203,7 @@ if (forgotLink) {
         }
     });
 }
+
+
+
+
