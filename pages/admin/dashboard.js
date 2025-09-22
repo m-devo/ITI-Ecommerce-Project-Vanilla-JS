@@ -395,7 +395,8 @@ async function loadRecentOrders() {
     try {
         const ordesSearchQuery = query(
             collection(db, "orders"),
-            orderBy("createdAt", "desc"),
+            // orderBy("createdAt", "desc"),
+            orderBy("userName"),
             limit(5)
         );
         const results = await getDocs(ordesSearchQuery);
