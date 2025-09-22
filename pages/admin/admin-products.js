@@ -1,3 +1,4 @@
+import './auth-guard.js'
 import { db } from "../../config/firebase-config.js";
 import {
     collection,
@@ -183,4 +184,3 @@ document.addEventListener("DOMContentLoaded", async () => {
         }, 600);
     });
 })
-
