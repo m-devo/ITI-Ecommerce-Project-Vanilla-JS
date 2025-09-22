@@ -113,6 +113,7 @@ class MainNavbar extends HTMLElement {
                     accountDropdown.innerHTML = data.fname;
                     accountDropdownMenu.innerHTML = `
                         <li><a class="dropdown-item" href="${basePath}/pages/profile/profile.html">Profile</a></li>
+                        <li><a class="dropdown-item" href="${basePath}/pages/orders/orders.html">Orders</a></li>
                         <li><a class="sign-out dropdown-item" href="#">Logout</a></li>
                     `;
 
