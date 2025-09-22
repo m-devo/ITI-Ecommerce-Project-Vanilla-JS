@@ -1,8 +1,6 @@
 import { fetchFeaturedProducts } from "../../data/products.js";
 
 let featuredProducts = [];
-
-// Shopping cart
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
 const productsContainer = document.getElementById("products-container");
@@ -10,20 +8,15 @@ const productsContainer = document.getElementById("products-container");
 document.addEventListener("DOMContentLoaded", function () {
   displayFeaturedProducts();
   updateCartUI();
+  updateWishlistCount();
+  updateWishlistButtonStates();
 
-  setTimeout(() => {
-    updateWishlistCount();
-    updateWishlistButtonStates();
-  }, 100);
-
-  // wishlist updates
   window.addEventListener("wishlist:updated", function () {
     updateWishlistCount();
     updateWishlistButtonStates();
   });
 });
 
-// update all wishlist button states
 function updateWishlistButtonStates() {
   if (typeof window.isInWishlist === "function") {
     const buttons = document.querySelectorAll(".wishlist-btn");
@@ -101,26 +94,9 @@ async function displayFeaturedProducts() {
     )
     .join("");
 
-  setTimeout(() => {
-    updateWishlistButtonStates();
-  }, 50);
-
-  try {
-    const buttons = productsContainer.querySelectorAll(".wishlist-btn");
-    buttons.forEach((btn) => {
-      const match = btn.getAttribute("onclick");
-      const idMatch = match && match.match(/isInWishlist\((\d+)\)/);
-      const id = idMatch ? parseInt(idMatch[1]) : null;
-      if (id && typeof isInWishlist === "function") {
-        btn.classList.toggle("active", isInWishlist(id));
-      }
-    });
-  } catch {
-    console.warn("Wishlist functions not loaded yet");
-  }
+  updateWishlistButtonStates();
 }
 
-// Generate  rating
 function generateStars(rating) {
   const fullStars = Math.floor(rating);
   const hasHalfStar = rating % 1 !== 0;
@@ -142,7 +118,6 @@ function generateStars(rating) {
   return stars;
 }
 
-// Quantity function
 window.increaseQuantity = function (productId) {
   const qtyInput = document.getElementById(`qty-${productId}`);
   const product = featuredProducts.find((p) => p.id == productId);
@@ -160,16 +135,8 @@ window.decreaseQuantity = function (productId) {
   }
 };
 
-// Add to cart functionality
 window.addToCart = function (productId) {
-  const product = featuredProducts.find((p) => {
-    return p.id == productId;
-  });
-  if (!product) {
-    showNotification("Error: Product not found!");
-    return;
-  }
-
+  const product = featuredProducts.find((p) => p.id == productId);
   const qtyInput = document.getElementById(`qty-${productId}`);
   const quantity = parseInt(qtyInput?.value || 1);
   const existingItem = cart.find((item) => item.id == productId);
@@ -177,39 +144,23 @@ window.addToCart = function (productId) {
   if (existingItem) {
     existingItem.quantity += quantity;
   } else {
-    cart.push({
-      ...product,
-      quantity: quantity,
-    });
+    cart.push({ ...product, quantity });
   }
 
-  // Reset quantity input
-  if (qtyInput) {
-    qtyInput.value = 1;
-  }
+  if (qtyInput) qtyInput.value = 1;
   localStorage.setItem("cart", JSON.stringify(cart));
   updateCartUI();
-  // Show success message
   showNotification(`${product.name} added to cart!`);
-};
-
-// View product details
-window.viewProductDetails = function (productId) {
-  localStorage.setItem("selectedProductId", productId);
-  window.location.href = "./product-details.html";
 };
 
 function updateCartUI() {
   const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
-
-  // Update cart count in navbar
   const cartLink = document.querySelector('.navbar .nav-link[href*="cart"]');
   if (cartLink) {
     cartLink.innerHTML = `Cart (${cartCount}) <i class="fas fa-shopping-cart"></i>`;
   }
 }
 
-// Show notification
 function showNotification(message) {
   const notification = document.createElement("div");
   notification.className = "alert alert-success position-fixed";
@@ -221,38 +172,27 @@ function showNotification(message) {
   `;
 
   document.body.appendChild(notification);
-
-  setTimeout(() => {
-    if (notification.parentElement) {
-      notification.remove();
-    }
-  }, 3000);
+  setTimeout(() => notification.remove(), 3000);
 }
 
-// View product details
 window.viewProductDetails = function (productId) {
-  window.location.href =
-    "./pages/product-details/product-details.html?id=" + productId;
+  window.location.href = `./pages/product-details/product-details.html?id=${productId}`;
 };
 
 function updateWishlistCount() {
-  try {
-    const count = window.getWishlist ? window.getWishlist().length : 0;
-    const countEl = document.getElementById("wishlist-count");
-    if (countEl)
-      countEl.innerHTML = `<i class="fas fa-heart me-2"></i>${count} ${
-        count === 1 ? "item" : "items"
-      }`;
+  const count = window.getWishlist ? window.getWishlist().length : 0;
+  const countEl = document.getElementById("wishlist-count");
+  if (countEl) {
+    countEl.innerHTML = `<i class="fas fa-heart me-2"></i>${count} ${
+      count === 1 ? "item" : "items"
+    }`;
+  }
 
-    const navWishlist = document.querySelector(
-      '.navbar .nav-link[href*="wishlist"]'
-    );
-    if (navWishlist) {
-      const icon = '<i class="fas fa-heart"></i>';
-      navWishlist.innerHTML = `Wishlist (${count}) ${icon}`;
-    }
-  } catch (error) {
-    console.warn("Wishlist functions not yet loaded:", error);
+  const navWishlist = document.querySelector(
+    '.navbar .nav-link[href*="wishlist"]'
+  );
+  if (navWishlist) {
+    navWishlist.innerHTML = `Wishlist (${count}) <i class="fas fa-heart"></i>`;
   }
 }
 
@@ -264,20 +204,6 @@ window.toggleWishlistSafely = function (product, buttonElement) {
     window.toggleWishlist(product);
     buttonElement.classList.toggle("active", window.isInWishlist(product.id));
     updateWishlistCount();
-  } else {
-    setTimeout(() => {
-      if (
-        typeof window.toggleWishlist === "function" &&
-        typeof window.isInWishlist === "function"
-      ) {
-        window.toggleWishlist(product);
-        buttonElement.classList.toggle(
-          "active",
-          window.isInWishlist(product.id)
-        );
-        updateWishlistCount();
-      }
-    }, 100);
   }
 };
 

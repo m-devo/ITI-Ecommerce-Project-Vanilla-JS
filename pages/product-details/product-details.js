@@ -7,108 +7,83 @@ let currentCart = JSON.parse(localStorage.getItem("cart")) || [];
 
 document.addEventListener("DOMContentLoaded", function () {
   loadProductDetails();
-
-  setTimeout(() => {
-    updateWishlistCount();
-  }, 100);
+  updateWishlistCount();
   updateCartUI();
 
-  window.addEventListener("wishlist:updated", function () {
-    updateWishlistCount();
-  });
+  window.addEventListener("wishlist:updated", updateWishlistCount);
 });
 
 async function loadProductDetails() {
   const params = new URLSearchParams(window.location.search);
-
   productId = params.get("id");
-
-  console.log("Product ID:", productId);
-
   product = await fetchProductById(productId);
-
-  console.log("Product:", product);
-
-  if (!product) {
-    document.getElementById("product-detail-content").innerHTML = `
-            <div class="text-center py-5">
-              <h3>Product not found</h3>
-              <p class="text-muted">The product you're looking for doesn't exist.</p>
-              <a href="products.html" class="btn btn-primary">Back to Products</a>
-            </div>
-          `;
-    return;
-  }
-
   document.getElementById("breadcrumb-product").textContent = product.name;
 
-  //  product details
   document.getElementById("product-detail-content").innerHTML = `
-          <div class="row">
-            <div class="col-md-6">
-              <div class="product-image-container">
-                <img src="${product.image}" alt="${
+    <div class="row">
+      <div class="col-md-6">
+        <div class="product-image-container">
+          <img src="${product.image}" alt="${
     product.name
   }" class="img-fluid rounded-3 product-main-image">
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="product-details-info">
+          <h1 class="display-5 fw-bold mb-3">${product.name}</h1>
+          
+          <div class="product-rating mb-3">
+            ${generateStars(product.rating)} 
+            <span class="text-muted ms-2">(${product.rating}/5.0)</span>
+          </div>
+          
+          <div class="product-price mb-4">
+            <span class="h2 text-primary fw-bold">$${product.price.toFixed(
+              2
+            )}</span>
+          </div>
+          
+          <div class="product-description mb-4">
+            <h5>Description</h5>
+            <p class="text-muted">${product.description}</p>
+          </div>
+          
+          <div class="product-details mb-4">
+            <h5>Product Details</h5>
+            <ul class="list-unstyled">
+              <li><strong>Category:</strong> ${getCategoryName(
+                product.category
+              )}</li>
+              <li><strong>Stock:</strong> <span class="text-${
+                product.stock > 10 ? "success" : "warning"
+              }">${product.stock} items available</span></li>
+              <li><strong>SKU:</strong> PRD-${product.id
+                .toString()
+                .padStart(4, "0")}</li>
+            </ul>
+          </div>
+          
+          <div class="product-actions">
+            <div class="quantity-controls mb-3 d-flex align-items-center gap-3">
+              <label for="detail-qty" class="form-label">Quantity:</label>
+              <div class="d-flex">
+                <button class="quantity-btn" onclick="decreaseDetailQuantity()">-</button>
+                <input type="number" class="quantity-input" id="detail-qty" value="1" min="1" max="${
+                  product.stock
+                }">
+                <button class="quantity-btn" onclick="increaseDetailQuantity()">+</button>
               </div>
             </div>
-            <div class="col-md-6">
-              <div class="product-details-info">
-                <h1 class="display-5 fw-bold mb-3">${product.name}</h1>
-                
-                <div class="product-rating mb-3">
-                  ${generateStars(product.rating)} 
-                  <span class="text-muted ms-2">(${product.rating}/5.0)</span>
-                </div>
-                
-                <div class="product-price mb-4">
-                  <span class="h2 text-primary fw-bold">$${product.price.toFixed(
-                    2
-                  )}</span>
-                </div>
-                
-                <div class="product-description mb-4">
-                  <h5>Description</h5>
-                  <p class="text-muted">${product.description}</p>
-                </div>
-                
-                <div class="product-details mb-4">
-                  <h5>Product Details</h5>
-                  <ul class="list-unstyled">
-                    <li><strong>Category:</strong> ${getCategoryName(
-                      product.category
-                    )}</li>
-                    <li><strong>Stock:</strong> <span class="text-${
-                      product.stock > 10 ? "success" : "warning"
-                    }">${product.stock} items available</span></li>
-                    <li><strong>SKU:</strong> PRD-${product.id
-                      .toString()
-                      .padStart(4, "0")}</li>
-                  </ul>
-                </div>
-                
-                <div class="product-actions">
-                  <div class="quantity-controls mb-3 d-flex align-items-center gap-3">
-                    <label for="detail-qty" class="form-label">Quantity:</label>
-                    <div class="d-flex">
-                      <button class="quantity-btn" onclick="decreaseDetailQuantity()">-</button>
-                      <input type="number" class="quantity-input" id="detail-qty" value="1" min="1" max="${
-                        product.stock
-                      }">
-                      <button class="quantity-btn" onclick="increaseDetailQuantity()">+</button>
-                    </div>
-                  </div>
-                  
-                  <div class="d-grid gap-2 d-md-block">
-                    <button class="btn btn-primary btn-lg" onclick="addToCartFromDetails()">
-                      <i class="fas fa-shopping-cart"></i> Add to Cart
-                    </button>
-                  </div>
-                </div>
-              </div>
+            
+            <div class="d-grid gap-2 d-md-block">
+              <button class="btn btn-primary btn-lg" onclick="addToCartFromDetails()">
+                <i class="fas fa-shopping-cart"></i> Add to Cart
+              </button>
             </div>
           </div>
-        `;
+        </div>
+      </div>
+    </div>`;
 
   loadRelatedProducts(product);
 }
@@ -132,57 +107,19 @@ window.decreaseDetailQuantity = function () {
 
 window.addToCartFromDetails = function () {
   const qtyInput = document.getElementById("detail-qty");
-  const quantity = parseInt(qtyInput.value);
-  const finalQuantity = parseInt(quantity || 1);
+  const quantity = parseInt(qtyInput.value) || 1;
 
-  const existingItem = currentCart.find((item) => item.id === productId);
-
-  if (existingItem) {
-    existingItem.quantity += finalQuantity;
-  } else {
-    currentCart.push({
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      image: product.image,
-      quantity: finalQuantity,
-    });
-  }
-
-  // Reset quantity input
-  if (qtyInput) {
-    qtyInput.value = 1;
-  }
-
-  localStorage.setItem("cart", JSON.stringify(currentCart));
-  updateCartUI();
-  showNotification(`${product.name} added to cart!`);
+  addToCart(product.id, quantity);
+  qtyInput.value = 1;
 };
 
 async function loadRelatedProducts(currentProduct) {
   try {
-    let allProductsList = null;
-    if (window.allProducts) {
-      allProductsList = window.allProducts;
-    } else if (window.products) {
-      allProductsList = window.products;
-    } else {
-      // Fetch products from database
-      const productsData = await fetchAllProducts({
-        category: currentProduct.category,
-        limitPerPage: 20,
-      });
-      allProductsList = productsData.products || [];
-    }
-
-    if (!allProductsList || allProductsList.length === 0) {
-      const container = document.getElementById("related-products-container");
-      if (container) {
-        container.innerHTML =
-          '<div class="col-12 text-center"><p class="text-muted">No related products found.</p></div>';
-      }
-      return;
-    }
+    const productsData = await fetchAllProducts({
+      category: currentProduct.category,
+      limitPerPage: 5,
+    });
+    const allProductsList = productsData.products || [];
 
     const relatedProducts = allProductsList
       .filter(
@@ -203,27 +140,25 @@ async function loadRelatedProducts(currentProduct) {
     container.innerHTML = relatedProducts
       .map(
         (product) => `
-            <div class="col-md-6 col-lg-3">
-              <div class="product-card" onclick="viewProductDetails('${
-                product.id
-              }')">
-                <img src="${product.image}" alt="${
+        <div class="col-md-6 col-lg-3">
+          <div class="product-card" onclick="viewProductDetails('${
+            product.id
+          }')">
+            <img src="${product.image}" alt="${
           product.name
         }" class="product-image">
-                <div class="product-info">
-                  <h6 class="product-title">${product.name}</h6>
-                  <div class="product-price">$${product.price.toFixed(2)}</div>
-                  <div class="product-rating">
-                    ${generateStars(product.rating)} (${product.rating})
-                  </div>
-                </div>
+            <div class="product-info">
+              <h6 class="product-title">${product.name}</h6>
+              <div class="product-price">$${product.price.toFixed(2)}</div>
+              <div class="product-rating">
+                ${generateStars(product.rating)} (${product.rating})
               </div>
             </div>
-          `
+          </div>
+        </div>`
       )
       .join("");
   } catch (error) {
-    console.error("Error loading related products:", error);
     const container = document.getElementById("related-products-container");
     if (container) {
       container.innerHTML =
@@ -262,38 +197,25 @@ function getCategoryName(category) {
   return categories[category] || category;
 }
 
-window.addToCart = function (productId, quantity = null) {
-  if (!product) {
-    console.error("Product not loaded");
-    return;
-  }
-
-  const qtyInput = document.getElementById(`qty-${productId}`);
-  const finalQuantity = quantity || parseInt(qtyInput?.value || 1);
-
+function addToCart(productId, quantity = 1) {
   const existingItem = currentCart.find((item) => item.id === productId);
 
   if (existingItem) {
-    existingItem.quantity += finalQuantity;
+    existingItem.quantity += quantity;
   } else {
     currentCart.push({
       id: product.id,
       name: product.name,
       price: product.price,
       image: product.image,
-      quantity: finalQuantity,
+      quantity: quantity,
     });
-  }
-
-  // Reset quantity input
-  if (qtyInput) {
-    qtyInput.value = 1;
   }
 
   localStorage.setItem("cart", JSON.stringify(currentCart));
   updateCartUI();
   showNotification(`${product.name} added to cart!`);
-};
+}
 
 function showNotification(message) {
   const notification = document.createElement("div");
@@ -301,9 +223,8 @@ function showNotification(message) {
   notification.style.cssText =
     "top: 100px; right: 20px; z-index: 9999; min-width: 300px;";
   notification.innerHTML = `
-          <i class="fas fa-check-circle"></i> ${message}
-          <button type="button" class="btn-close float-end" onclick="this.parentElement.remove()"></button>
-        `;
+    <i class="fas fa-check-circle"></i> ${message}
+    <button type="button" class="btn-close float-end" onclick="this.parentElement.remove()"></button>`;
 
   document.body.appendChild(notification);
 
@@ -319,8 +240,8 @@ function updateCartUI() {
     (total, item) => total + item.quantity,
     0
   );
-
   const cartLink = document.querySelector('.navbar .nav-link[href*="cart"]');
+
   if (cartLink) {
     cartLink.innerHTML = `Cart (${cartCount}) <i class="fas fa-shopping-cart"></i>`;
   }
@@ -328,28 +249,28 @@ function updateCartUI() {
 
 function updateWishlistCount() {
   try {
-    // Get wishlist from localStorage directly
     const wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
     const count = wishlist.length;
 
     const countEl = document.getElementById("wishlist-count");
-    if (countEl)
+    if (countEl) {
       countEl.innerHTML = `<i class="fas fa-heart me-2"></i>${count} ${
         count === 1 ? "item" : "items"
       }`;
+    }
 
     const navWishlist = document.querySelector(
       '.navbar .nav-link[href*="wishlist"]'
     );
     if (navWishlist) {
-      const icon = '<i class="fas fa-heart"></i>';
-      navWishlist.innerHTML = `Wishlist (${count}) ${icon}`;
+      navWishlist.innerHTML = `Wishlist (${count}) <i class="fas fa-heart"></i>`;
     }
   } catch (error) {
-    console.log("Error updating wishlist count:", error);
+    console.warn("Error updating wishlist count:", error);
   }
 }
 
 window.viewProductDetails = function (productId) {
   window.location.href = `product-details.html?id=${productId}`;
 };
+

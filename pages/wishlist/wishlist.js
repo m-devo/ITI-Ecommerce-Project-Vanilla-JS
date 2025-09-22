@@ -92,10 +92,7 @@ function renderWishlist() {
     container.innerHTML = list
       .map((p) => {
         const date = p.addedAt ? new Date(p.addedAt).toLocaleDateString() : "";
-        const rating =
-          typeof generateStars === "function"
-            ? generateStars(p.rating || 0)
-            : "";
+        const rating = generateStars(p.rating || 0);
         return `
           <div class="col-sm-6 col-md-4 col-lg-3">
             <div class="wishlist-item-card">
@@ -132,7 +129,6 @@ function renderWishlist() {
   }
 
   updateWishlistCount();
-
   updateCartUI();
 }
 
@@ -144,7 +140,6 @@ function addToWishlist(product) {
   if (!product || typeof product.id === "undefined") return;
   const list = getWishlist();
   if (!list.some((p) => p.id == product.id)) {
-    // Use == for loose comparison
     list.push({ ...product, addedAt: Date.now() });
     setWishlist(list);
   }
@@ -175,22 +170,13 @@ function clearWishlist() {
 let modalSelectedProductId = null;
 
 function openMoveToCart(productId) {
-  console.log(
-    "Opening move to cart modal for product ID:",
-    productId,
-    typeof productId
-  );
   modalSelectedProductId = productId;
   const input = document.getElementById("modal-quantity");
   if (input) input.value = 1;
   const modalEl = document.getElementById("moveToCartModal");
-  console.log("Modal element found:", !!modalEl);
-  console.log("Bootstrap available:", !!window.bootstrap);
   if (modalEl && window.bootstrap) {
     const modal = new bootstrap.Modal(modalEl);
     modal.show();
-  } else {
-    console.error("Modal element or Bootstrap not found");
   }
 }
 
@@ -211,31 +197,18 @@ function attachModalConfirm() {
   const btn = document.getElementById("confirm-move-to-cart");
   if (!btn) return;
   btn.addEventListener("click", () => {
-    console.log(
-      "Modal confirm clicked, selected product ID:",
-      modalSelectedProductId
-    );
     if (!modalSelectedProductId) return;
     const qty = parseInt(document.getElementById("modal-quantity")?.value || 1);
-    console.log("Quantity:", qty);
 
-    // Find product in wishlist
     const wishlist = getWishlist();
-    console.log("Current wishlist:", wishlist);
     const product = wishlist.find(
       (p) => p.id == modalSelectedProductId || p.id === modalSelectedProductId
     );
-    console.log("Found product:", product);
 
     if (product) {
-      // Add to cart
       addToCartFromWishlist(product, qty);
-      // Remove from wishlist
       removeFromWishlist(product.id);
-      // Show success notification
       showNotification(`${product.name} moved to cart successfully!`);
-    } else {
-      console.error("Product not found in wishlist");
     }
 
     const modalEl = document.getElementById("moveToCartModal");
@@ -247,19 +220,14 @@ function attachModalConfirm() {
 }
 
 function addToCartFromWishlist(product, quantity = 1) {
-  console.log("Adding to cart from wishlist:", product, "quantity:", quantity);
   let cart = JSON.parse(localStorage.getItem("cart")) || [];
-  console.log("Current cart:", cart);
-
   const existingItem = cart.find(
     (item) => item.id == product.id || item.id === product.id
   );
 
   if (existingItem) {
-    console.log("Item exists in cart, updating quantity");
     existingItem.quantity += quantity;
   } else {
-    console.log("Adding new item to cart");
     cart.push({
       id: product.id,
       name: product.name,
@@ -270,10 +238,8 @@ function addToCartFromWishlist(product, quantity = 1) {
   }
 
   localStorage.setItem("cart", JSON.stringify(cart));
-  console.log("Updated cart:", cart);
   currentCart = cart;
   updateCartUI();
-
   window.dispatchEvent(new CustomEvent("cart:updated"));
 }
 
@@ -306,23 +272,6 @@ function showNotification(message) {
   }, 3000);
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  const sortSelect = document.getElementById("wishlist-sort");
-  if (sortSelect) {
-    sortSelect.setAttribute("aria-label", "Sort wishlist");
-    sortSelect.addEventListener("change", renderWishlist);
-  }
-
-  renderWishlist();
-
-  window.addEventListener("wishlist:updated", () => {
-    updateWishlistCount();
-    renderWishlist();
-  });
-
-  attachModalConfirm();
-});
-
 function updateCartUI() {
   const cartCount = currentCart.reduce(
     (total, item) => total + item.quantity,
@@ -335,6 +284,23 @@ function updateCartUI() {
   }
 }
 
+document.addEventListener("DOMContentLoaded", () => {
+  const sortSelect = document.getElementById("wishlist-sort");
+  if (sortSelect) {
+    sortSelect.setAttribute("aria-label", "Sort wishlist");
+    sortSelect.addEventListener("change", renderWishlist);
+  }
+
+  renderWishlist();
+  attachModalConfirm();
+
+  window.addEventListener("wishlist:updated", () => {
+    updateWishlistCount();
+    renderWishlist();
+  });
+});
+
+// Global exports
 window.addToWishlist = addToWishlist;
 window.removeFromWishlist = removeFromWishlist;
 window.toggleWishlist = toggleWishlist;
