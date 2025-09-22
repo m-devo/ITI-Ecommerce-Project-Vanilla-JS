@@ -130,7 +130,7 @@ if (loginForm) {
 
             errorMessageDiv.innerText = "";
             errorMessageDiv.style.display = "none";
-            window.location.replace('../../index.html');
+            window.location.replace('../profile/profile.html');
 
         } catch (error) {
             console.log("Firebase Error:", error);
