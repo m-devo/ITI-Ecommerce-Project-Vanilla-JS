@@ -472,7 +472,6 @@ function updateWishlistCount() {
   }
 }
 
-// Safe wrapper for wishlist toggle
 window.toggleWishlistSafely = function (product, buttonElement) {
   if (
     typeof window.toggleWishlist === "function" &&
