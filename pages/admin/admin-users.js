@@ -76,19 +76,19 @@ async function displayUsers() {
 async function formSubmit(e) {
     e.preventDefault();
 
-    const lowerCaseName = (fname+lname).towLowerCase()
+    // const lowerCaseName = (fname+lname).towLowerCase()
     const userId = document.getElementById("user-id").value;
     const userData = {
         fname: document.getElementById("fname").value,
         lname: document.getElementById("lname").value,
-        lowerCase: lowerCaseName,
+        // lowerCase: lowerCaseName,
         email: document.getElementById("email").value,
         address: document.getElementById("address").value,
         dob: document.getElementById("dob").value,
         gender: document.getElementById("gender").value,
         phone: document.getElementById("phone").value,
         role: document.getElementById("role").value,
-        isActive: document.getElementById("isActive").checked,
+        isActive: document.getElementById("isActive").value,
         image: document.getElementById("user-image-url").value
     }
 
@@ -120,7 +120,7 @@ function populateUserForm(userData, userId) {
     document.getElementById("gender").value = userData.gender || "";
     document.getElementById("phone").value = userData.phone || "";
     document.getElementById("role").value = userData.role || "User";
-    document.getElementById("isActive").checked = userData.isActive || false;
+    document.getElementById("isActive").checked = userData.isActive || true;
     document.getElementById("user-image-url").value = userData.image || ""
 }
 
