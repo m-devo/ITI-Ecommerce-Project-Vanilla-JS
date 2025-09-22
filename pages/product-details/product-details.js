@@ -1,31 +1,33 @@
 // Product details
-import { fetchProductById } from "../../data/products.js";
+import { fetchProductById, fetchAllProducts } from "../../data/products.js";
 
 let product = null;
 let productId = null;
 let currentCart = JSON.parse(localStorage.getItem("cart")) || [];
 
 document.addEventListener("DOMContentLoaded", function () {
-
   loadProductDetails();
 
-  updateWishlistCount();
+  setTimeout(() => {
+    updateWishlistCount();
+  }, 100);
   updateCartUI();
-});
 
+  window.addEventListener("wishlist:updated", function () {
+    updateWishlistCount();
+  });
+});
 
 async function loadProductDetails() {
   const params = new URLSearchParams(window.location.search);
 
-  productId = params.get('id');
+  productId = params.get("id");
 
   console.log("Product ID:", productId);
 
-  let product = await fetchProductById(productId);
+  product = await fetchProductById(productId);
 
   console.log("Product:", product);
-
-
 
   if (!product) {
     document.getElementById("product-detail-content").innerHTML = `
@@ -98,13 +100,8 @@ async function loadProductDetails() {
                   </div>
                   
                   <div class="d-grid gap-2 d-md-block">
-                    <button class="btn btn-primary btn-lg me-2" onclick="addToCartFromDetails()">
+                    <button class="btn btn-primary btn-lg" onclick="addToCartFromDetails()">
                       <i class="fas fa-shopping-cart"></i> Add to Cart
-                    </button>
-                    <button class="btn btn-buy-now btn-lg" onclick="buyNow('${
-                      product.id
-                    }')">
-                      <i class="fas fa-bolt"></i> Buy Now
                     </button>
                   </div>
                 </div>
@@ -116,28 +113,26 @@ async function loadProductDetails() {
   loadRelatedProducts(product);
 }
 
-window.increaseDetailQuantity = function() {
+window.increaseDetailQuantity = function () {
   const qtyInput = document.getElementById("detail-qty");
   const maxStock = parseInt(qtyInput.max);
 
   if (parseInt(qtyInput.value) < maxStock) {
     qtyInput.value = parseInt(qtyInput.value) + 1;
   }
-}
+};
 
-window.decreaseDetailQuantity = function() {
+window.decreaseDetailQuantity = function () {
   const qtyInput = document.getElementById("detail-qty");
 
   if (parseInt(qtyInput.value) > 1) {
     qtyInput.value = parseInt(qtyInput.value) - 1;
   }
-}
+};
 
 window.addToCartFromDetails = function () {
   const qtyInput = document.getElementById("detail-qty");
-
   const quantity = parseInt(qtyInput.value);
-
   const finalQuantity = parseInt(quantity || 1);
 
   const existingItem = currentCart.find((item) => item.id === productId);
@@ -162,62 +157,79 @@ window.addToCartFromDetails = function () {
   localStorage.setItem("cart", JSON.stringify(currentCart));
   updateCartUI();
   showNotification(`${product.name} added to cart!`);
-}
+};
 
-// to directly buy the product through the checkout page
+async function loadRelatedProducts(currentProduct) {
+  try {
+    let allProductsList = null;
+    if (window.allProducts) {
+      allProductsList = window.allProducts;
+    } else if (window.products) {
+      allProductsList = window.products;
+    } else {
+      // Fetch products from database
+      const productsData = await fetchAllProducts({
+        category: currentProduct.category,
+        limitPerPage: 20,
+      });
+      allProductsList = productsData.products || [];
+    }
 
-window.buyNow = function(productId) {
-  addToCartFromDetails(productId);
-  showNotification("Redirecting to checkout...");
-}
+    if (!allProductsList || allProductsList.length === 0) {
+      const container = document.getElementById("related-products-container");
+      if (container) {
+        container.innerHTML =
+          '<div class="col-12 text-center"><p class="text-muted">No related products found.</p></div>';
+      }
+      return;
+    }
 
-function loadRelatedProducts(currentProduct) {
-  let allProductsList = null;
-  if (window.allProducts) {
-    allProductsList = window.allProducts;
-  } else if (window.products) {
-    allProductsList = window.products;
-  }
+    const relatedProducts = allProductsList
+      .filter(
+        (p) =>
+          p.category === currentProduct.category && p.id !== currentProduct.id
+      )
+      .slice(0, 4);
 
-  if (!allProductsList) return;
+    const container = document.getElementById("related-products-container");
+    if (!container) return;
 
-  const relatedProducts = allProductsList
-    .filter(
-      (p) =>
-        p.category === currentProduct.category && p.id !== currentProduct.id
-    )
-    .slice(0, 4);
+    if (relatedProducts.length === 0) {
+      container.innerHTML =
+        '<div class="col-12 text-center"><p class="text-muted">No related products found.</p></div>';
+      return;
+    }
 
-  const container = document.getElementById("related-products-container");
-
-  if (relatedProducts.length === 0) {
-    container.innerHTML =
-      '<div class="col-12 text-center"><p class="text-muted">No related products found.</p></div>';
-    return;
-  }
-
-  container.innerHTML = relatedProducts
-    .map(
-      (product) => `
-          <div class="col-md-6 col-lg-3">
-            <div class="product-card" onclick="viewProductDetails(${
-              product.id
-            })">
-              <img src="${product.image}" alt="${
-        product.name
-      }" class="product-image">
-              <div class="product-info">
-                <h6 class="product-title">${product.name}</h6>
-                <div class="product-price">$${product.price.toFixed(2)}</div>
-                <div class="product-rating">
-                  ${generateStars(product.rating)} (${product.rating})
+    container.innerHTML = relatedProducts
+      .map(
+        (product) => `
+            <div class="col-md-6 col-lg-3">
+              <div class="product-card" onclick="viewProductDetails('${
+                product.id
+              }')">
+                <img src="${product.image}" alt="${
+          product.name
+        }" class="product-image">
+                <div class="product-info">
+                  <h6 class="product-title">${product.name}</h6>
+                  <div class="product-price">$${product.price.toFixed(2)}</div>
+                  <div class="product-rating">
+                    ${generateStars(product.rating)} (${product.rating})
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        `
-    )
-    .join("");
+          `
+      )
+      .join("");
+  } catch (error) {
+    console.error("Error loading related products:", error);
+    const container = document.getElementById("related-products-container");
+    if (container) {
+      container.innerHTML =
+        '<div class="col-12 text-center"><p class="text-muted">Error loading related products.</p></div>';
+    }
+  }
 }
 
 function generateStars(rating) {
@@ -250,7 +262,11 @@ function getCategoryName(category) {
   return categories[category] || category;
 }
 
-window.addToCart = function(productId, quantity = null) {
+window.addToCart = function (productId, quantity = null) {
+  if (!product) {
+    console.error("Product not loaded");
+    return;
+  }
 
   const qtyInput = document.getElementById(`qty-${productId}`);
   const finalQuantity = quantity || parseInt(qtyInput?.value || 1);
@@ -277,7 +293,7 @@ window.addToCart = function(productId, quantity = null) {
   localStorage.setItem("cart", JSON.stringify(currentCart));
   updateCartUI();
   showNotification(`${product.name} added to cart!`);
-}
+};
 
 function showNotification(message) {
   const notification = document.createElement("div");
@@ -298,7 +314,6 @@ function showNotification(message) {
   }, 3000);
 }
 
-
 function updateCartUI() {
   const cartCount = currentCart.reduce(
     (total, item) => total + item.quantity,
@@ -312,26 +327,29 @@ function updateCartUI() {
 }
 
 function updateWishlistCount() {
-  const count = getWishlist().length;
-  const countEl = document.getElementById("wishlist-count");
-  if (countEl)
-    countEl.innerHTML = `<i class="fas fa-heart me-2"></i>${count} ${
-      count === 1 ? "item" : "items"
-    }`;
-
-  const navWishlist = document.querySelector(
-    '.navbar .nav-link[href*="wishlist"]'
-  );
-  if (navWishlist) {
-    const icon = '<i class="fas fa-heart"></i>';
-    navWishlist.innerHTML = `Wishlist (${count}) ${icon}`;
-  }
-};
-
-function getWishlist() {
   try {
-    return JSON.parse(localStorage.getItem("wishlist")) || [];
-  } catch {
-    return [];
+    // Get wishlist from localStorage directly
+    const wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
+    const count = wishlist.length;
+
+    const countEl = document.getElementById("wishlist-count");
+    if (countEl)
+      countEl.innerHTML = `<i class="fas fa-heart me-2"></i>${count} ${
+        count === 1 ? "item" : "items"
+      }`;
+
+    const navWishlist = document.querySelector(
+      '.navbar .nav-link[href*="wishlist"]'
+    );
+    if (navWishlist) {
+      const icon = '<i class="fas fa-heart"></i>';
+      navWishlist.innerHTML = `Wishlist (${count}) ${icon}`;
+    }
+  } catch (error) {
+    console.log("Error updating wishlist count:", error);
   }
 }
+
+window.viewProductDetails = function (productId) {
+  window.location.href = `product-details.html?id=${productId}`;
+};

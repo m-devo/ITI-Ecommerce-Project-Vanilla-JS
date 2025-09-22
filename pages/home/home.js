@@ -7,7 +7,6 @@ let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
 const productsContainer = document.getElementById("products-container");
 
-// Initialize the page
 document.addEventListener("DOMContentLoaded", function () {
   displayFeaturedProducts();
   updateCartUI();
@@ -17,7 +16,7 @@ document.addEventListener("DOMContentLoaded", function () {
     updateWishlistButtonStates();
   }, 100);
 
-  // Listen for wishlist updates
+  // wishlist updates
   window.addEventListener("wishlist:updated", function () {
     updateWishlistCount();
     updateWishlistButtonStates();
@@ -44,7 +43,13 @@ function updateWishlistButtonStates() {
 async function displayFeaturedProducts() {
   featuredProducts = await fetchFeaturedProducts();
 
-  console.log(featuredProducts);
+  console.log("Featured products loaded:", featuredProducts);
+  console.log("Number of products:", featuredProducts.length);
+
+  if (!featuredProducts || featuredProducts.length === 0) {
+    console.error("No featured products loaded!");
+    return;
+  }
 
   productsContainer.innerHTML = featuredProducts
     .map(
@@ -78,19 +83,19 @@ async function displayFeaturedProducts() {
             </div>
           </div>
           <div class="quantity-controls" onclick="event.stopPropagation()">
-            <button class="quantity-btn" onclick="decreaseQuantity(${
+            <button class="quantity-btn" onclick="decreaseQuantity('${
               product.id
-            })">-</button>
+            }')">-</button>
             <input type="number" class="quantity-input" id="qty-${
               product.id
             }" value="1" min="1" max="${product.stock}">
-            <button class="quantity-btn" onclick="increaseQuantity(${
+            <button class="quantity-btn" onclick="increaseQuantity('${
               product.id
-            })">+</button>
+            }')">+</button>
           </div>
-          <button class="add-to-cart-btn" onclick="event.stopPropagation(); addToCart(${
+          <button class="add-to-cart-btn" onclick="event.stopPropagation(); addToCart('${
             product.id
-          })">
+          }')">
             <i class="fas fa-shopping-cart"></i> Add to Cart
           </button>
         </div>
@@ -142,9 +147,9 @@ function generateStars(rating) {
 // Quantity function
 window.increaseQuantity = function (productId) {
   const qtyInput = document.getElementById(`qty-${productId}`);
-  const product = products.find((p) => p.id === productId);
+  const product = featuredProducts.find((p) => p.id == productId); // Use loose equality
 
-  if (parseInt(qtyInput.value) < product.stock) {
+  if (product && parseInt(qtyInput.value) < product.stock) {
     qtyInput.value = parseInt(qtyInput.value) + 1;
   }
 };
@@ -159,25 +164,59 @@ window.decreaseQuantity = function (productId) {
 
 // Add to cart functionality
 window.addToCart = function (productId) {
-  const product = featuredProducts.find((p) => p.id === productId);
-  const qtyInput = document.getElementById(`qty-${productId}`);
-  const quantity = parseInt(qtyInput.value);
+  console.log(
+    "addToCart called with productId:",
+    productId,
+    "type:",
+    typeof productId
+  );
+  console.log("featuredProducts array:", featuredProducts);
 
-  const existingItem = cart.find((item) => item.id === productId);
+  const product = featuredProducts.find((p) => {
+    console.log(
+      "Comparing product.id:",
+      p.id,
+      "type:",
+      typeof p.id,
+      "with productId:",
+      productId
+    );
+    return p.id == productId;
+  });
+
+  console.log("Found product:", product);
+
+  if (!product) {
+    console.error("Product not found with ID:", productId);
+    showNotification("Error: Product not found!");
+    return;
+  }
+
+  const qtyInput = document.getElementById(`qty-${productId}`);
+  console.log("Quantity input element:", qtyInput);
+  const quantity = parseInt(qtyInput?.value || 1);
+  console.log("Quantity to add:", quantity);
+
+  const existingItem = cart.find((item) => item.id == productId);
 
   if (existingItem) {
     existingItem.quantity += quantity;
+    console.log("Updated existing item quantity:", existingItem.quantity);
   } else {
     cart.push({
       ...product,
       quantity: quantity,
     });
+    console.log("Added new item to cart");
   }
 
   // Reset quantity input
-  qtyInput.value = 1;
+  if (qtyInput) {
+    qtyInput.value = 1;
+  }
 
   localStorage.setItem("cart", JSON.stringify(cart));
+  console.log("Cart saved to localStorage:", cart);
 
   // Update cart UI
   updateCartUI();
@@ -249,7 +288,6 @@ function updateWishlistCount() {
   }
 }
 
-// Safe wrapper for wishlist toggle
 window.toggleWishlistSafely = function (product, buttonElement) {
   if (
     typeof window.toggleWishlist === "function" &&

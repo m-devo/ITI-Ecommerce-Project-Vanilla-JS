@@ -1,4 +1,4 @@
-import { db } from '../config/firebase-config.js';
+import { db } from "../config/firebase-config.js";
 import {
   collection,
   query,
@@ -8,9 +8,8 @@ import {
   startAfter,
   getDocs,
   doc,
-  getDoc
+  getDoc,
 } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
-
 
 export async function fetchAllProducts({
   category = "",
@@ -31,11 +30,13 @@ export async function fetchAllProducts({
     if (search) {
       const searchTerm = search.toLowerCase();
       queryConstraints.push(where("name_lowercase", ">=", searchTerm));
-      queryConstraints.push(where("name_lowercase", "<=", searchTerm + "\uf8ff"));
+      queryConstraints.push(
+        where("name_lowercase", "<=", searchTerm + "\uf8ff")
+      );
       queryConstraints.push(orderBy("name_lowercase"));
-    } 
-    
-    if (sort && !search) { 
+    }
+
+    if (sort && !search) {
       if (sort === "price-high") {
         queryConstraints.push(orderBy("price", "desc"));
       }
@@ -50,7 +51,7 @@ export async function fetchAllProducts({
     if (lastVisible) {
       queryConstraints.push(startAfter(lastVisible));
     }
-    
+
     queryConstraints.push(limit(limitPerPage));
 
     const q = query(productsCollection, ...queryConstraints);
@@ -64,51 +65,48 @@ export async function fetchAllProducts({
     // If there was a search and a sort, we sort the results here
     if (search && sort) {
       products.sort((a, b) => {
-        if (sort === 'price-high') return b.price - a.price;
-        if (sort === 'price-low') return a.price - b.price;
-        if (sort === 'rating') return b.rating - a.rating;
+        if (sort === "price-high") return b.price - a.price;
+        if (sort === "price-low") return a.price - b.price;
+        if (sort === "rating") return b.rating - a.rating;
         return 0;
       });
     }
 
-    const newLastVisible = querySnapshot.docs.length > 0 ? querySnapshot.docs[querySnapshot.docs.length - 1] : null;
+    const newLastVisible =
+      querySnapshot.docs.length > 0
+        ? querySnapshot.docs[querySnapshot.docs.length - 1]
+        : null;
 
     return { products, lastVisible: newLastVisible };
-
   } catch (error) {
     console.error("Error fetching products: ", error);
   }
 }
 
-
-
 export async function fetchFeaturedProducts() {
   console.log("Fetching all products...");
-  
-  const productsCollectionRef = collection(db, "products");
-  
-  try {
 
+  const productsCollectionRef = collection(db, "products");
+
+  try {
     const featuredQuery = query(
       productsCollectionRef,
-      where("isFeatured", "==", true) ,
-      limit(9),
+      where("isFeatured", "==", true),
+      limit(9)
     );
 
     // featuredQuery.push(limit(9));
 
     const querySnapshot = await getDocs(featuredQuery);
 
-    
-    const productsList = querySnapshot.docs.map(doc => ({
-      id: doc.id, 
-      ...doc.data()
+    const productsList = querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
     }));
 
     console.log("f p ", productsList);
-    
-    return productsList;
 
+    return productsList;
   } catch (error) {
     console.error("Error fetching products: ", error);
   }
