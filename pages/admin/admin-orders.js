@@ -34,7 +34,7 @@ const getStatusBadge = (orderStatus) => {
     return statusMap[orderStatus] || "secondary"; 
 };
 function createTableRow(docs) {
-    // الحالة الأولى: لا توجد أي طلبات لعرضها
+
     if (!docs || docs.length === 0) {
         tbody.innerHTML = `<tr><td colspan="10" class="text-center">No orders found.</td></tr>`;
         return;
@@ -44,7 +44,17 @@ function createTableRow(docs) {
         const order = doc.data();
         const orderId = doc.id;
         const orderStatus = getStatusBadge(order.status);
-        const orderDate = order.createdAt?.toDate().toLocaleDateString('en-US') || 'N/A';
+        let orderDate = 'There is No Date'; 
+
+        if (order.createdAt && typeof order.createdAt.toDate === 'function') {
+          
+            orderDate = order.createdAt.toDate().toLocaleDateString('en-US');
+        } else if (order.date) {
+            const dateObject = new Date(order.date);
+            if (!isNaN(dateObject)) {
+                orderDate = dateObject.toLocaleDateString('en-US');
+            }
+        }
 
         let totalQuantity = 0;
         let products = 'No products listed';

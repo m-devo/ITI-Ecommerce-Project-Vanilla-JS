@@ -23,5 +23,3 @@ onAuthStateChanged(auth, async (user) => {
         window.location.replace('../auth/login.html');
     }
 });
-
-document.getElementById()
