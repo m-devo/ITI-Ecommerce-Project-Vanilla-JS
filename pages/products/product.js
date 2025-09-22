@@ -20,16 +20,15 @@ let currentCart = JSON.parse(localStorage.getItem("cart")) || [];
 document.addEventListener("DOMContentLoaded", function () {
   initProductsPage();
 
-  // Setup cart functionality
+  //  cart functionality
   updateCartUI();
 
-  // Setup wishlist functionality
+  //  wishlist functionality
   setTimeout(() => {
     updateWishlistCount();
     updateWishlistButtonStates();
   }, 100);
 
-  // Listen for wishlist updates
   window.addEventListener("wishlist:updated", function () {
     updateWishlistCount();
     updateWishlistButtonStates();
@@ -424,8 +423,6 @@ window.loadMoreProducts = async () => {
 
 // View product details
 window.viewProductDetails = function viewProductDetails(productId) {
-  // Store the selected product ID for the details page
-  // Navigate to product details page
   window.location.href =
     "../product-details/product-details.html?id=" + productId;
 };
@@ -497,7 +494,6 @@ window.toggleWishlistSafely = function (product, buttonElement) {
   }
 };
 
-// Make products available globally
 window.allProducts = allProducts;
 
 //?====================================================================================
