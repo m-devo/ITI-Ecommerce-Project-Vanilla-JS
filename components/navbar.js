@@ -49,7 +49,7 @@ class MainNavbar extends HTMLElement {
                         </ul>
                     </div>
 
-                    <div class="dropdown">
+                    <div class="dropdown mx-1">
                     <button class="btn btn-primary dropdown-toggle dropdown-account" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                     </button>
                     <ul class="dropdown-menu dropdown-menu-account">
@@ -77,7 +77,6 @@ class MainNavbar extends HTMLElement {
         })();
 
         (function updateWishlistCount() {
-            console.log("updateWishlistCount");
             const count = wishlist.length;
             const countEl = document.getElementById("wishlist-count");
             if (countEl)
