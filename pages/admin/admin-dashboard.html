@@ -13,16 +13,15 @@
 <body>
     <!-- Header -->
     <header>
-        <nav class="px-3 py-2 text-white nav-color">
+        <nav class="text-white nav-color">
             <div class="container">
-                <div class="d-flex flex-wrap justify-content-lg-start align-items-center justify-content-center">
-                    <a href="#"
-                        class="d-flex text-decoration-none align-items-center my-2 my-lg-0 me-lg-auto text-white ">
+                <div class="admin-panel">
+                    <a href="#" id="logo" class="me-lg-auto text-white">
                         <i class="fas fa-cogs fa-2x me-2"></i>
                         <span class="fs-4">Admin Panel</span>
                     </a>
 
-                    <ul class="nav col-12 col-lg-auto my-2 justify-content-center my-md-0 text-small">
+                    <ul id="navs" class="nav text-small">
                         <li><a href="../../index.html" class="nav-link text-white text-center"><i
                                     class="fas fa-home d-block mx-auto mb-1 fs-4"></i>Home</a></li>
                         <li><a href="admin-dashboard.html" class="nav-link text-secondary text-center"><i
@@ -38,15 +37,21 @@
             </div>
         </nav>
 
-        <div class="px-3 py-2 border-bottom bg-light">
-            <div class="container d-flex flex-wrap justify-content-center">
-                <form class="col-12 col-lg-auto mb-2 mb-lg-0 me-lg-auto">
-                    <input type="search" class="form-control search-expand" placeholder="Search..." aria-label="Search">
-                </form>
+        <div id="nav-padding" class="bg-light">
+            <div class="container">
+
+                <div id="welcome-admin">
+                    <span class="fw-bold">Welcome, Admin!</span>
+
+                    <div class="badge bg-light text-dark clock">
+                        <i class="fas fa-clock me-2"></i>
+                        <span id="live-date-time"></span>
+                    </div>
+
+                </div>
 
                 <div class="dropdown text-end">
-                    <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle" data-bs-toggle="dropdown"
-                        aria-expanded="false">
+                    <a href="#" class="dropdown-toggle logout" data-bs-toggle="dropdown" aria-expanded="false">
                         <img src="https://marketplace.canva.com/Oks3A/MAFG-_Oks3A/1/tl/canva-person-icon-avatar-MAFG-_Oks3A.png"
                             alt="profile-img" width="32" height="32" class="rounded-circle">
                     </a>
@@ -60,25 +65,26 @@
                                 Logout</a></li>
                     </ul>
                 </div>
+
             </div>
         </div>
     </header>
 
     <!-- Main Content -->
-    <main class="container my-5">
-        <h1 class="h3 mb-0">Dashboard</h1>
-        <p class="text-muted mb-4">Overview of latest activity and performance</p>
+    <main class="container">
+        <h1 class="h2 mb-1">Dashboard</h1>
+        <p class="text-muted mb-3">Overview of latest activity and performance</p>
 
         <!-- Stats-->
         <div class="row g-4 mb-4">
             <div class="col-xl-3 col-md-6">
-                <div class="card stat-card shadow-sm border-0 h-100">
-                    <div class="card-body d-flex justify-content-between align-items-center">
+                <div class="card stat-card monthly">
+                    <div class="card-body c-body">
                         <div>
                             <div class="text-muted text-uppercase small">Sales (Monthly)</div>
-                            <div class="h4 fw-bold mb-0 text-primary">$0</div>
+                            <div class="h4 fw-bold mb-0 text-primary" id="monthly-sales">0</div>
                         </div>
-                        <div class="icon-circle bg-primary bg-opacity-10 text-primary d-flex align-items-center justify-content-center rounded-circle fs-4"
+                        <div id="icon" class="icon-circle bg-primary bg-opacity-10 text-primary rounded-circle fs-4"
                             style="width:50px; height:50px;">
                             <i class="fas fa-calendar-alt"></i>
                         </div>
@@ -86,13 +92,13 @@
                 </div>
             </div>
             <div class="col-xl-3 col-md-6">
-                <div class="card stat-card shadow-sm border-0 h-100">
-                    <div class="card-body d-flex justify-content-between align-items-center">
+                <div class="card stat-card annualy">
+                    <div class="card-body c-body">
                         <div>
                             <div class="text-muted text-uppercase small">Earnings (Annual)</div>
-                            <div class="h4 fw-bold mb-0 text-success">$0</div>
+                            <div class="h4 text-success" id="annual-earnings">0</div>
                         </div>
-                        <div class="icon-circle bg-success bg-opacity-10 text-success d-flex align-items-center justify-content-center rounded-circle fs-4"
+                        <div id="icon" class="icon-circle bg-success bg-opacity-10 text-success rounded-circle fs-4"
                             style="width:50px; height:50px;">
                             <i class="fas fa-dollar-sign"></i>
                         </div>
@@ -100,13 +106,13 @@
                 </div>
             </div>
             <div class="col-xl-3 col-md-6">
-                <div class="card stat-card shadow-sm border-0 h-100">
-                    <div class="card-body d-flex justify-content-between align-items-center">
+                <div class="card stat-card total-orders">
+                    <div class="card-body c-body">
                         <div>
                             <div class="text-muted text-uppercase small">Total Orders</div>
-                            <div class="h4 fw-bold mb-0 text-warning">0</div>
+                            <div class="h4 text-warning" id="total-orders"></div>
                         </div>
-                        <div class="icon-circle bg-warning bg-opacity-10 text-warning d-flex align-items-center justify-content-center rounded-circle fs-4"
+                        <div id="icon" class="icon-circle bg-warning bg-opacity-10 text-warning rounded-circle fs-4"
                             style="width:50px; height:50px;">
                             <i class="fas fa-shopping-cart"></i>
                         </div>
@@ -114,13 +120,13 @@
                 </div>
             </div>
             <div class="col-xl-3 col-md-6">
-                <div class="card stat-card shadow-sm border-0 h-100">
-                    <div class="card-body d-flex justify-content-between align-items-center">
+                <div class="card stat-card new-orders">
+                    <div class="card-body c-body">
                         <div>
                             <div class="text-muted text-uppercase small">New Orders</div>
-                            <div class="h4 fw-bold mb-0 text-warning">0</div>
+                            <div class="h4 text-warning" id="new-orders"></div>
                         </div>
-                        <div class="icon-circle bg-warning bg-opacity-10 text-warning d-flex align-items-center justify-content-center rounded-circle fs-4"
+                        <div id="icon" class="icon-circle bg-warning bg-opacity-10 text-warning rounded-circle fs-4"
                             style="width:50px; height:50px;">
                             <i class="fas fa-shopping-cart"></i>
                         </div>
@@ -128,27 +134,13 @@
                 </div>
             </div>
             <div class="col-xl-3 col-md-6">
-                <div class="card stat-card shadow-sm border-0 h-100">
-                    <div class="card-body d-flex justify-content-between align-items-center">
+                <div class="card stat-card total-users">
+                    <div class="card-body c-body">
                         <div>
                             <div class="text-muted text-uppercase small">Total Users</div>
-                            <div class="h4 fw-bold mb-0 text-info">0</div>
+                            <div class="h4 text-info" id="total-users"></div>
                         </div>
-                        <div class="icon-circle bg-info bg-opacity-10 text-info d-flex align-items-center justify-content-center rounded-circle fs-4"
-                            style="width:50px; height:50px;">
-                            <i class="fas fa-user-plus"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-                        <div class="col-xl-3 col-md-6">
-                <div class="card stat-card shadow-sm border-0 h-100">
-                    <div class="card-body d-flex justify-content-between align-items-center">
-                        <div>
-                            <div class="text-muted text-uppercase small">New Users</div>
-                            <div class="h4 fw-bold mb-0 text-info">0</div>
-                        </div>
-                        <div class="icon-circle bg-info bg-opacity-10 text-info d-flex align-items-center justify-content-center rounded-circle fs-4"
+                        <div id="icon" class="icon-circle bg-info bg-opacity-10 text-info rounded-circle fs-4"
                             style="width:50px; height:50px;">
                             <i class="fas fa-user-plus"></i>
                         </div>
@@ -156,63 +148,84 @@
                 </div>
             </div>
             <div class="col-xl-3 col-md-6">
-                <div class="card stat-card shadow-sm border-0 h-100">
-                    <div class="card-body d-flex justify-content-between align-items-center">
+                <div class="card stat-card new-users">
+                    <div class="card-body c-body">
+                        <div>
+                            <div class="text-muted text-uppercase small">New Users</div>
+                            <div class="h4 text-info" id="new-users"></div>
+                        </div>
+                        <div id="icon" class="icon-circle bg-info bg-opacity-10 text-info rounded-circle fs-4"
+                            style="width:50px; height:50px;">
+                            <i class="fas fa-user-plus"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6">
+                <div class="card stat-card total-products">
+                    <div class="card-body c-body">
                         <div>
                             <div class="text-muted text-uppercase small">Total Products</div>
-                            <div class="h4 fw-bold mb-0 text-danger">0</div>
+                            <div class="h4 text-danger" id="total-products"></div>
                         </div>
-                        <div class="icon-circle bg-danger bg-opacity-10 text-danger d-flex align-items-center justify-content-center rounded-circle fs-4"
+                        <div id="icon" class="icon-circle bg-danger bg-opacity-10 text-danger rounded-circle fs-4"
                             style="width:50px; height:50px;">
                             <i class="fas fa-box"></i>
                         </div>
                     </div>
                 </div>
             </div>
-                        <div class="col-xl-3 col-md-6">
-                <div class="card stat-card shadow-sm border-0 h-100">
-                    <div class="card-body d-flex justify-content-between align-items-center">
+            <div class="col-xl-3 col-md-6">
+                <div class="card stat-card new-products">
+                    <div class="card-body c-body">
                         <div>
                             <div class="text-muted text-uppercase small">New Products</div>
-                            <div class="h4 fw-bold mb-0 text-danger">0</div>
+                            <div class="h4 text-danger" id="new-products"></div>
                         </div>
-                        <div class="icon-circle bg-danger bg-opacity-10 text-danger d-flex align-items-center justify-content-center rounded-circle fs-4"
+                        <div id="icon" class="icon-circle bg-danger bg-opacity-10 text-danger rounded-circle fs-4"
                             style="width:50px; height:50px;">
                             <i class="fas fa-box"></i>
                         </div>
                     </div>
                 </div>
-            </div>    
+            </div>
         </div>
 
         <!-- Quick Actions -->
         <h5 class="mb-3">Quick Actions</h5>
         <div class="row g-4 mb-4">
+
             <div class="col-md-4">
-                <div class="card shadow-sm border-0 h-100 text-center p-3 align-items-center">
+                <div id="quick-actions-card" calls="card" data-bs-toggle="modal" data-bs-target="#addProductModal"
+                    style="cursor: pointer;">
                     <i class="fas fa-plus-circle fa-2x text-primary mb-2"></i>
                     <h6>Add Product</h6>
                 </div>
             </div>
+
             <div class="col-md-4">
-                <div class="card shadow-sm border-0 h-100 text-center p-3 align-items-center">
+                <div id="quick-actions-card" calls="card" data-bs-toggle="modal" data-bs-target="#manageOrdersModal"
+                    style="cursor: pointer;">
                     <i class="fas fa-shopping-cart fa-2x text-success mb-2"></i>
-                    <h6>View Orders</h6>
+                    <h6>Manage Orders</h6>
                 </div>
             </div>
+
             <div class="col-md-4">
-                <div class="card shadow-sm border-0 h-100 text-center p-3 align-items-center">
+                <div id="quick-actions-card" calls="card" data-bs-toggle="modal" data-bs-target="#manageUserModal"
+                    style="cursor: pointer;">
                     <i class="fas fa-users-cog fa-2x text-warning mb-2"></i>
-                    <h6>Manage Users</h6>
+                    <h6>Manage User</h6>
                 </div>
             </div>
+
         </div>
 
         <!-- Charts + Table -->
-        <div class="row g-4 mb-4">
+        <div class="row g-4 mb-3">
             <div class="col-lg-7">
-                <div class="card shadow-sm border-0 h-100">
-                    <div class="card-header bg-white fw-bold d-flex align-items-center">
+                <div class="card">
+                    <div class="card-header chart-pie">
                         <i class="fas fa-chart-line me-2"></i> Earnings Overview
                     </div>
                     <div class="card-body">
@@ -221,8 +234,8 @@
                 </div>
             </div>
             <div class="col-lg-5">
-                <div class="card shadow-sm border-0 h-100">
-                    <div class="card-header bg-white fw-bold d-flex align-items-center">
+                <div class="card ">
+                    <div class="card-header">
                         <i class="fas fa-chart-pie me-2"></i> Orders by Status
                     </div>
                     <div class="card-body">
@@ -235,13 +248,13 @@
         <!-- Orders + Activity -->
         <div class="row g-4">
             <div class="col-lg-7">
-                <div class="card shadow-sm border-0 h-100">
-                    <div class="card-header bg-white fw-bold d-flex align-items-center">
+                <div class="card">
+                    <div class="card-header chart-pie">
                         <i class="fas fa-bell me-2"></i> Recent Orders
                     </div>
                     <div class="card-body p-0">
                         <div class="table-responsive">
-                            <table class="table table-hover mb-0 align-middle text-center">
+                            <table class="table table-hover">
                                 <thead class="table-light">
                                     <tr>
                                         <th>Order ID</th>
@@ -249,27 +262,8 @@
                                         <th>Status</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>#1</td>
-                                        <td>Mohamed</td>
-                                        <td><span class="badge bg-danger">Canceled</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td>#1</td>
-                                        <td>Mohamed</td>
-                                        <td><span class="badge bg-warning text-dark">Pending</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td>#1</td>
-                                        <td>Mohamed</td>
-                                        <td><span class="badge bg-success">Delivered</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td>#1</td>
-                                        <td>Mohamed</td>
-                                        <td><span class="badge bg-info text-white">Shipped</span></td>
-                                    </tr>
+                                <tbody id="recent-orders-tbody">
+                                    <!-- This will be populated by firebase -->
                                 </tbody>
                             </table>
                         </div>
@@ -277,43 +271,124 @@
                 </div>
             </div>
             <div class="col-lg-5">
-                <div class="card shadow-sm border-0 h-100">
-                    <div class="card-header bg-white fw-bold d-flex align-items-center">
+                <div class="card">
+                    <div class="card-header chart-pie">
                         <i class="fas fa-clock me-2"></i> Recent Activities
                     </div>
                     <div class="card-body">
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item"><i class="fas fa-user-plus text-success me-2"></i> New user
-                                <b>Ahmed</b>
-                                is registered
-                            </li>
-                            <li class="list-group-item"><i class="fas fa-box text-primary me-2"></i> Product
-                                <b>Laptop</b> is added
-                            </li>
-                            <li class="list-group-item"><i class="fas fa-shopping-cart text-warning me-2"></i> Order
-                                <b>#1</b> is placed
-                            </li>
-                            <li class="list-group-item"><i class="fas fa-dollar-sign text-info me-2"></i> Payment of
-                                <b>1 EGP</b>
-                                is received
-                            </li>
+                        <ul class="list-group list-group-flush" id="recent-activities-list">
+                            <!-- This will be populated by firebase -->
                         </ul>
                     </div>
                 </div>
             </div>
         </div>
     </main>
+    <div class="modal fade" id="manageUserModal" tabindex="-1" aria-labelledby="manageUserModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="manageUserModalLabel">Manage User Account</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-muted small">Enter a user's email to find their account and enable or disable it.</p>
 
+                    <div class="input-group mb-3">
+                        <input type="email" class="form-control" placeholder="Search by user email..."
+                            id="user-search-input">
+                        <button class="btn btn-outline-primary" type="button" id="user-search-btn">Search</button>
+                    </div>
+                    <div id="user-search-results">
+                        <!-- User result -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="manageOrdersModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Manage Pending Orders</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="orders-status-container">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="addProductModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add New Product</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="add-product-form">
+                        <div class="mb-3">
+                            <label for="product-name" class="form-label">Product Name</label>
+                            <input type="text" class="form-control" id="product-name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="product-description" class="form-label">Description</label>
+                            <textarea class="form-control" id="product-description" rows="3"></textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="product-price" class="form-label">Price (EGP)</label>
+                                <input type="number" class="form-control" id="product-price" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="product-stock" class="form-label">Stock Quantity</label>
+                                <input type="number" class="form-control" id="product-stock" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="product-category" class="form-label">Category</label>
+                            <input type="text" class="form-control" id="product-category" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="product-image-file" class="form-label">Upload Product Image</label>
+                            <input class="form-control" type="file" id="product-image-file" accept="image/*">
+                            <div class="form-text">Or please put the link below.</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="product-image-url" class="form-label">Image URL (Optional)</label>
+                            <input type="url" class="form-control" id="product-image-url" placeholder="please enter an image">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="save-product-btn">Save Product</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <!-- Footer -->
     <footer class="text-white text-center py-3 mt-5">
-        &copy; 2025 Tech Cave | <a href="#" class="text-white-50">Privacy Policy</a> | 
+        &copy; 2025 Tech Cave | <a href="#" class="text-white-50">Privacy Policy</a> |
         <a href="#" class="text-white-50">Terms</a>
     </footer>
 
     <!-- Scripts -->
+         <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+    <script type="module" src="./dashboard.js"></script>
+    <script type="module" src="./dataAnalysis.js"></script>
+    <!-- <script type="module" src="./auth-guard.js"></script> -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="./admin.js"></script>
+
 </body>
 
 </html>

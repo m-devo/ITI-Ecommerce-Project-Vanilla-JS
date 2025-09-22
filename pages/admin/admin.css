@@ -2,6 +2,16 @@
 /* Custom Font */
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
 
+/******************/
+
+
+/*Global*/
+
+* {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+}
 :root {
     --primary: var(--bs-primary);
     --primary-dark: var(--bs-warning);
@@ -17,29 +27,198 @@ body {
 .nav-color, footer{
     background-color: var(--primary);
 } 
+/********************************/
 
-
-.search-expand {
-    transition: width 0.4s ease-in-out;
+/*Users - Products - Orders - Dashboard*/
+nav .nav-color{
+    padding-right: 1rem;
+    padding-bottom: 1rem;
 }
 
-.search-expand:focus {
-    width: 400px !important;
+.admin-panel {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
 }
 
+#logo {
+    display:flex;
+    margin-top: 0.5rem;
+    align-items: center;
+    text-decoration: none;
+}  
+
+#navs {
+    flex: 0 0 auto;
+    width: auto;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+    justify-content: center;
+}
+
+#search-place {
+    flex: 0 0 auto;
+    width: 100%;
+    margin-bottom: 0.5rem;
+    justify-content: center;
+}
+#nav-padding {
+    padding:.5rem 1rem;
+} 
+
+.logout {
+    display: block;
+    color: #212529; 
+    text-decoration: none;
+}
+
+div .container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+table {
+    margin-bottom: 0;
+    vertical-align: middle;
+    text-align: center;
+}
+
+@media (min-width: 992px) {
+  .navs {
+    flex: 0 0 auto;
+  }
+}
+
+@media (min-width: 768px) {
+  .navs {
+    margin-top: 0;
+    margin-bottom: 0;
+    display: flex;
+    flex-wrap: wrap;
+  }
+}
+
+@media (min-width: 992px) {
+    #search-place {
+        flex: 0 0 auto;
+        width: auto;
+        margin-bottom: 0;
+        margin-right: auto;
+    }
+}
+
+/*products orders users*/
+.search-bar{
+    flex: 0 0 auto;
+    width: 100%;
+    margin-bottom: 0.5rem;
+}
+
+.orders-dashboard, .products-dashboard, .users-dashboard {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+}
+
+.products-pagination, .orders-pagination, .users-pagination {
+        margin-top: 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+}
+
+@media (min-width: 992px) {
+    .search-bar {
+        flex: 0 0 auto;
+        width: auto;
+        margin-bottom: 0;
+        margin-right: auto;
+    }
+}
+
+******************** */
+/* Admin Dashboard */
 .stat-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
-}
-
-input.form-control.search-expand:focus {
-    width: 300px;
 }
 
 .stat-card {
     transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 
+#welcome-admin {
+    display: flex;
+    align-items: center;
+    align-items: center;
+    color: #212529;
+    text-decoration: none
+}
+
+.clock {
+    margin-left: 1rem;
+    display: flex;
+    align-items: center;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+}
+
+main {
+    margin-bottom: 3rem;
+    margin-top: 3rem;
+}
+
+.monthly, .annualy, .total-orders,  .new-orders,
+    .total-users, .new-users, .total-products, 
+    .new-products, div .card{
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    border: 0px; 
+    height: 100% 
+}
+
+#icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.c-body{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#monthly-sales, #annual-earnings, #total-orders,
+#new-orders, #total-users, #new-users, #total-products,
+#new-products {
+    margin-bottom: 0;
+    font-weight:700;
+}
+@media (min-width: 992px) {
+ #welcome-admin {
+    margin-right: auto;
+  }
+}
+
+#quick-actions-card {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    border: 0;
+    height: 100% ;
+    text-align: center;
+    padding: 1rem ;
+    align-items: center;
+}
+
+.chart-pie {
+    background-color: #fff;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+
+}
 /* Users */
 .user-img {
     width: 40px;
@@ -52,13 +231,14 @@ input.form-control.search-expand:focus {
     padding: 0.25rem 0.5rem;
 }
 
-
+/************************/
+/* Products */
 .product-img {
     height: 180px;
     object-fit: cover;
 }
-/* Products */
-.product-pic{
+
+.product-img{
     width: 50px;
     height: 50px;
     object-fit: cover;
