@@ -36,7 +36,7 @@ export const createOrder = async (cartItems,  totalAmount, address, payment_meth
     status: "pending", 
     date: now.toString(),
     address: address,
-    payment_method: payment_method.card.brand + " ****" + payment_method.card.last4,
+    payment_method: payment_method.card.brand !== "cash_on_delivery" ?  payment_method.card.brand + " ****" + payment_method.card.last4 : "Cash on Delivery",
   };
 
   try {
