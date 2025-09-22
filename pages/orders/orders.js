@@ -59,7 +59,7 @@ const renderOrders = (filter = 'all') => {
                         <div>
                             <h6 class="fw-bold mb-1">Order #${order.id}</h6>
                             <small class="text-muted d-block">Placed on ${new Date(order.date).toLocaleDateString()}</small>
-                            <small class="text-muted">Total: $${order.total}</small>
+                            <small class="text-muted">Total: $${order.total.toFixed(2)}</small>
                         </div>
                         <div class="d-flex align-items-center mt-3 mt-md-0">
                             <span class="badge ${getStatusClass(order.status || 'pending')} p-2 me-3">${order.status || 'Pending'}</span>
