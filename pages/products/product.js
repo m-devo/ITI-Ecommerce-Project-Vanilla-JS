@@ -243,7 +243,7 @@ function showNotification(message) {
   const notification = document.createElement("div");
   notification.className = "alert alert-success position-fixed";
   notification.style.cssText =
-    "top: 100px; right: 20px; z-index: 9999; min-width: 300px;";
+    "top: 80px; right: 20px; z-index: 9999; min-width: 300px;";
   notification.innerHTML = `
     <i class="fas fa-check-circle"></i> ${message}
     <button type="button" class="btn-close float-end" onclick="this.parentElement.remove()"></button>
