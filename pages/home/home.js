@@ -145,7 +145,7 @@ function generateStars(rating) {
 // Quantity function
 window.increaseQuantity = function (productId) {
   const qtyInput = document.getElementById(`qty-${productId}`);
-  const product = featuredProducts.find((p) => p.id == productId); // Use loose equality
+  const product = featuredProducts.find((p) => p.id == productId);
 
   if (product && parseInt(qtyInput.value) < product.stock) {
     qtyInput.value = parseInt(qtyInput.value) + 1;
