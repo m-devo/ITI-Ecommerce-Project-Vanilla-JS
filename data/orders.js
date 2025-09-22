@@ -54,11 +54,9 @@ export async function getUserOrders(uid) {
   try {
     const productsCollection = collection(db, "orders");
 
-    console.log("Fetching all products...");
-    console.log("uid", uid);
 
-
-    const q = query(productsCollection, where("userId", "==", uid));
+    const q = query(productsCollection, where("userId", "==", uid), orderBy("date", "desc") );
+  
     const querySnapshot = await getDocs(q);
 
     let orders = querySnapshot.docs.map((doc) => ({
