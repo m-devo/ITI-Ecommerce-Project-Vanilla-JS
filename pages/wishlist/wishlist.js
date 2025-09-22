@@ -151,11 +151,8 @@ function addToWishlist(product) {
 }
 
 function removeFromWishlist(id) {
-  console.log("Removing from wishlist, ID:", id, typeof id);
   const currentList = getWishlist();
-  console.log("Current wishlist:", currentList);
   const list = currentList.filter((p) => p.id != id);
-  console.log("Filtered list:", list);
   setWishlist(list);
   renderWishlist();
 }
@@ -212,7 +209,6 @@ function decreaseModalQuantity() {
 
 function attachModalConfirm() {
   const btn = document.getElementById("confirm-move-to-cart");
-  console.log("Attaching modal confirm, button found:", !!btn);
   if (!btn) return;
   btn.addEventListener("click", () => {
     console.log(

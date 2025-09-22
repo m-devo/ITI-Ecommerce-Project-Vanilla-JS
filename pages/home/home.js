@@ -43,11 +43,7 @@ function updateWishlistButtonStates() {
 async function displayFeaturedProducts() {
   featuredProducts = await fetchFeaturedProducts();
 
-  console.log("Featured products loaded:", featuredProducts);
-  console.log("Number of products:", featuredProducts.length);
-
   if (!featuredProducts || featuredProducts.length === 0) {
-    console.error("No featured products loaded!");
     return;
   }
 
