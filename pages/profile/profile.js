@@ -47,7 +47,7 @@ onAuthStateChanged(auth, async (user) => {
         }
 
         const savedPic = localStorage.getItem(`profilePic_${user.uid}`);
-        profileImg.src = savedPic || "/pages/profile/150fa8800b0a0d5633abc1d1c4db3d87.jpg";
+        profileImg.src = savedPic || "./150fa8800b0a0d5633abc1d1c4db3d87.jpg";
     } else {
         window.location.href = "../auth/login.html";
     }
