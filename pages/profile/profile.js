@@ -1,19 +1,16 @@
-import { auth, db, storage } from '../../assets/js/firebase-config.js';
+import { auth, db } from '../../assets/js/firebase-config.js';
 
 import {
     onAuthStateChanged,
     signOut,
     reauthenticateWithCredential,
     EmailAuthProvider,
-    updateEmail,
     updatePassword
 } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
 import {
     doc, getDoc, updateDoc
 } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
-import {
-    ref, uploadBytes, getDownloadURL
-} from "https://www.gstatic.com/firebasejs/9.15.0/firebase-storage.js";
+
 
 // DOM Elements
 const fnameInput = document.getElementById("fname");
@@ -29,7 +26,6 @@ const profileImg = document.getElementById("profileImg");
 const updateBtn = document.getElementById("UpdateBtn");
 const changePicBtn = document.getElementById("changePicBtn");
 const signOutBtn = document.querySelector(".sidebar button");
-const changeEmailBtn = document.querySelector(".security button.primary");
 const changePassBtn = document.querySelector(".security button:not(.primary)");
 
 
@@ -48,8 +44,10 @@ onAuthStateChanged(auth, async (user) => {
             phoneInput.value = data.phone || "";
             dobInput.value = data.dob || "";
             genderSelect.value = data.gender || "Prefer not to say";
-            profileImg.src = data.photoURL || "/pages/profile/150fa8800b0a0d5633abc1d1c4db3d87.jpg";
         }
+
+        const savedPic = localStorage.getItem(`profilePic_${user.uid}`);
+        profileImg.src = savedPic || "/pages/profile/150fa8800b0a0d5633abc1d1c4db3d87.jpg";
     } else {
         window.location.href = "../auth/login.html";
     }
@@ -65,6 +63,7 @@ updateBtn.addEventListener("click", async () => {
         fname: fnameInput.value,
         lname: lnameInput.value,
         address: addressInput.value,
+        email: emailInput.value,
         phone: phoneInput.value,
         dob: dobInput.value,
         gender: genderSelect.value
@@ -80,7 +79,7 @@ changePicBtn.addEventListener("click", () => {
     fileInput.accept = "image/*";
     fileInput.click();
 
-    fileInput.onchange = async (e) => {
+    fileInput.onchange = (e) => {
         const file = e.target.files[0];
         if (!file) return;
 
@@ -88,20 +87,24 @@ changePicBtn.addEventListener("click", () => {
         if (!user) return;
 
         try {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
 
-            const storageRef = ref(storage, `profilePics/${user.uid}`);
+            reader.onload = () => {
+                const base64Image = reader.result;
 
-            await uploadBytes(storageRef, file);
+                profileImg.src = base64Image;
 
-            const url = await getDownloadURL(storageRef);
+                localStorage.setItem(`profilePic_${user.uid}`, base64Image);
 
-            profileImg.src = url;
+                alert("Profile picture updated locally for this user! ✅");
+            };
 
-            await updateDoc(doc(db, "users", user.uid), {
-                photoURL: url
-            });
+            reader.onerror = (err) => {
+                console.error(err);
+                alert("❌ Error reading file: \n" + err);
+            };
 
-            alert("Profile picture updated! ✅");
         } catch (error) {
             console.error(error);
             alert("❌ Error uploading image: \n" + error.message);
@@ -110,43 +113,6 @@ changePicBtn.addEventListener("click", () => {
 });
 
 
-
-changeEmailBtn.addEventListener("click", async () => {
-    const user = auth.currentUser;
-    if (!user) return;
-
-    const newEmail = prompt("Enter your new email:");
-    if (!newEmail) return;
-
-    const currentPassword = prompt("Enter your current password to confirm:");
-    if (!currentPassword) return;
-
-    try {
-        const credential = EmailAuthProvider.credential(user.email, currentPassword);
-        await reauthenticateWithCredential(user, credential);
-
-        await updateEmail(user, newEmail);
-
-        await updateDoc(doc(db, "users", user.uid), { email: newEmail });
-        emailInput.value = newEmail;
-
-        await user.sendEmailVerification();
-
-        alert(`✅ Email updated successfully! \n A verification email has been sent to ${newEmail}. \n Please check your inbox and confirm.`);
-
-    } catch (error) {
-        if (error.code === "auth/operation-not-allowed") {
-            alert("⚠️ Changing email is not allowed.\n Make sure Email/Password sign-in is enabled in Firebase Auth.");
-        } else if (error.code === "auth/requires-recent-login") {
-            alert("⚠️ Please login again and retry changing your email.");
-        } else if (error.code === "auth/invalid-email") {
-            alert("❌ The new email address is invalid.");
-        } else {
-            alert("❌ Error updating email: " + error.message);
-        }
-        console.error("Error updating email:", error);
-    }
-});
 
 changePassBtn.addEventListener("click", async () => {
     const user = auth.currentUser;
