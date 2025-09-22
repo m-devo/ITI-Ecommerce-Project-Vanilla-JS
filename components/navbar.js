@@ -110,10 +110,19 @@ class MainNavbar extends HTMLElement {
 
                     console.log("data", data.fname);
 
-                    accountDropdown.innerHTML = data.fname;
+                    const adminLink = data.role.toLowerCase() === "admin" ?
+                            `<li><a class="dropdown-item" href="${basePath}/pages/admin/admin-dashboard.html">Admin</a></li>` : "";
+                    
+
+
+                    accountDropdown.innerHTML = data.fname ?? data.first_name;
                     accountDropdownMenu.innerHTML = `
                         <li><a class="dropdown-item" href="${basePath}/pages/profile/profile.html">Profile</a></li>
-                        <li><a class="dropdown-item" href="${basePath}/pages/orders/orders.html">Orders</a></li>
+                        <li><a class="dropdown-item" href="${basePath}/pages/orders/orders.html">Orders</a></li>`
+                        +
+                            adminLink
+                        +
+                        `
                         <li><a class="sign-out dropdown-item" href="#">Logout</a></li>
                     `;
 
