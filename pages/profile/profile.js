@@ -3,6 +3,8 @@ import { auth, db, storage } from '../../assets/js/firebase-config.js';
 import {
     onAuthStateChanged,
     signOut,
+    reauthenticateWithCredential,
+    EmailAuthProvider,
     updateEmail,
     updatePassword
 } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
@@ -46,7 +48,7 @@ onAuthStateChanged(auth, async (user) => {
             phoneInput.value = data.phone || "";
             dobInput.value = data.dob || "";
             genderSelect.value = data.gender || "Prefer not to say";
-            profileImg.src = data.photoURL || "https://i.pravatar.cc/120";
+            profileImg.src = data.photoURL || "/pages/profile/150fa8800b0a0d5633abc1d1c4db3d87.jpg";
         }
     } else {
         window.location.href = "../auth/login.html";
@@ -68,7 +70,7 @@ updateBtn.addEventListener("click", async () => {
         gender: genderSelect.value
     });
 
-    alert("Profile updated successfully!");
+    alert("Profile updated successfully! ✅");
 });
 
 
@@ -86,7 +88,7 @@ changePicBtn.addEventListener("click", () => {
         if (!user) return;
 
         try {
-            
+
             const storageRef = ref(storage, `profilePics/${user.uid}`);
 
             await uploadBytes(storageRef, file);
@@ -99,10 +101,10 @@ changePicBtn.addEventListener("click", () => {
                 photoURL: url
             });
 
-            alert("Profile picture updated!");
+            alert("Profile picture updated! ✅");
         } catch (error) {
             console.error(error);
-            alert("Error uploading image: " + error.message);
+            alert("❌ Error uploading image: \n" + error.message);
         }
     };
 });
@@ -116,17 +118,35 @@ changeEmailBtn.addEventListener("click", async () => {
     const newEmail = prompt("Enter your new email:");
     if (!newEmail) return;
 
+    const currentPassword = prompt("Enter your current password to confirm:");
+    if (!currentPassword) return;
+
     try {
+        const credential = EmailAuthProvider.credential(user.email, currentPassword);
+        await reauthenticateWithCredential(user, credential);
+
         await updateEmail(user, newEmail);
+
         await updateDoc(doc(db, "users", user.uid), { email: newEmail });
         emailInput.value = newEmail;
-        alert("Email updated successfully!");
+
+        await user.sendEmailVerification();
+
+        alert(`✅ Email updated successfully! \n A verification email has been sent to ${newEmail}. \n Please check your inbox and confirm.`);
+
     } catch (error) {
-        console.error(error);
-        alert("Error updating email: " + error.message);
+        if (error.code === "auth/operation-not-allowed") {
+            alert("⚠️ Changing email is not allowed.\n Make sure Email/Password sign-in is enabled in Firebase Auth.");
+        } else if (error.code === "auth/requires-recent-login") {
+            alert("⚠️ Please login again and retry changing your email.");
+        } else if (error.code === "auth/invalid-email") {
+            alert("❌ The new email address is invalid.");
+        } else {
+            alert("❌ Error updating email: " + error.message);
+        }
+        console.error("Error updating email:", error);
     }
 });
-
 
 changePassBtn.addEventListener("click", async () => {
     const user = auth.currentUser;
@@ -135,12 +155,28 @@ changePassBtn.addEventListener("click", async () => {
     const newPassword = prompt("Enter your new password (at least 6 chars):");
     if (!newPassword) return;
 
+    if (newPassword.length < 6) {
+        alert("⚠️ Password must be at least 6 characters.");
+        return;
+    }
+
     try {
+        const currentPassword = prompt("Enter your current password to confirm:");
+        if (!currentPassword) return;
+
+        const credential = EmailAuthProvider.credential(user.email, currentPassword);
+        await reauthenticateWithCredential(user, credential);
+
+        if (newPassword === currentPassword) {
+            alert("⚠️ New password cannot be the same as the current password.");
+            return;
+        }
+
         await updatePassword(user, newPassword);
-        alert("Password updated successfully!");
+        alert("Password updated successfully! ✅");
     } catch (error) {
         console.error(error);
-        alert("Error updating password: " + error.message);
+        alert("❌ Error updating password: " + error.message);
     }
 });
 
