@@ -10,7 +10,7 @@ onAuthStateChanged(auth, async (user) => {
     if (!user) {
         window.location.href = "../auth/login.html";
     } else {
-        user = user.uid;
+        uid = user.uid;
     }
 });
 
@@ -131,52 +131,86 @@ const form = document.getElementById('payment-form');
 const submitButton = document.getElementById('submit-button');
 const spinner = document.getElementById('spinner');
 
+const creditCardRadio = document.getElementById('credit');
+const codRadio = document.getElementById('cod');
+const creditCardInfoDiv = document.getElementById('credit-card-info');
+
+
+function updatePaymentMethodUI() {
+    if (codRadio.checked) {
+        creditCardInfoDiv.style.display = 'none'; 
+        cardElement.clear(); 
+        checkoutBtn.textContent = 'Place Order';
+    } else {
+        creditCardInfoDiv.style.display = 'block'; 
+        checkoutBtn.textContent = `Pay Now $${total.toFixed(2)}`; 
+    }
+}
+
+creditCardRadio.addEventListener('change', updatePaymentMethodUI);
+codRadio.addEventListener('change', updatePaymentMethodUI);
+
+updatePaymentMethodUI();
+
 form.addEventListener('submit', async (event) => {
     event.preventDefault();
 
-    // Trigger Bootstrap validation
     form.classList.add('was-validated');
     if (!form.checkValidity()) {
         return;
     }
 
     const address = document.getElementById('address').value;
+
+    const selectedPaymentMethod = document.querySelector('input[name="paymentMethod"]:checked').id;
     
-    // Disable button and show spinner
     submitButton.disabled = true;
     spinner.classList.remove('d-none');
     checkoutBtn.textContent = 'Processing...';
 
-    // Create payment method with Stripe
-
     try {
-        const { paymentMethod, error } = await stripe.createPaymentMethod({
-            type: 'card',
-            card: cardElement,
-            billing_details: {
-                'address': address,
-                'user_id': uid
-            },
-        });
+        let orderPaymentMethod;
 
-        await createOrder(cart, total, address, paymentMethod);
+        if (selectedPaymentMethod === 'credit') {
+            const { paymentMethod, error } = await stripe.createPaymentMethod({
+                type: 'card',
+                card: cardElement,
+                billing_details: {
+                    address: {
+                        line1: address,
+                    },
+                },
+            });
+
+            if (error) {
+                cardErrors.textContent = error.message;
+                throw new Error(error.message); 
+            }
+            orderPaymentMethod = paymentMethod;
+
+        } else if (selectedPaymentMethod === 'cod') {
+            orderPaymentMethod = {
+                id: 'cash_on_delivery',
+                type: 'cod',
+                card: { brand: 'Cash', last4: 'N/A' } 
+            };
+        }
+
+        const orderId = await createOrder(cart, total, address, orderPaymentMethod);
 
         localStorage.removeItem('cart');
 
-        window.location.href = `../orders/orders.html?payment=success`;
+        localStorage.setItem('success', 'Your order has been placed successfully! id: ' + orderId);
 
+        window.location.href = `../orders/order-details.html?id=${orderId}`;
     } catch (orderError) {
-            console.error("Failed to create order:", orderError);
-            cardErrors.textContent = "Could not save your order. Please try again.";
+        console.error("Failed to process payment or create order:", orderError);
+        if (!cardErrors.textContent) {
+            cardErrors.textContent = "Could not process your order. Please try again.";
+        }
 
-            submitButton.disabled = false;
-            spinner.classList.add('d-none');
-            checkoutBtn.textContent = `Pay Now $${total.toFixed(2)}`;
+        submitButton.disabled = false;
+        spinner.classList.add('d-none');
+        updatePaymentMethodUI(); 
     }
-
 });
-
-
-
-
-
