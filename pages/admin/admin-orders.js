@@ -32,32 +32,45 @@ const getStatusBadge = (orderStatus) => {
     };
     return statusMap[orderStatus] || "secondary"; 
 };
-
 function createTableRow(docs) {
+    // الحالة الأولى: لا توجد أي طلبات لعرضها
     if (!docs || docs.length === 0) {
         tbody.innerHTML = `<tr><td colspan="10" class="text-center">No orders found.</td></tr>`;
         return;
     }
+
     const rows = docs.map(doc => {
         const order = doc.data();
         const orderId = doc.id;
         const orderStatus = getStatusBadge(order.status);
-        const orderDate = order.createdAt.toDate().toLocaleDateString('en-US');
-        const productsList = order.products.map(product => {
-            return `
-                <td>${product.name}</td>
-                <td>${product.quantity}</td>
-            `;
-        }).join('');
+        const orderDate = order.createdAt?.toDate().toLocaleDateString('en-US') || 'N/A';
+
+        let totalQuantity = 0;
+        let products = 'No products listed';
+
+        if (Array.isArray(order.products) && order.products.length > 0) {
+            
+            const productNames = [];
+
+            order.products.forEach(product => {
+                totalQuantity += product.quantity || 0;
+                
+                productNames.push(product.name || 'Unknown Product');
+            });
+
+            products = `<ul class="list-unstyled mb-0">${productNames.map(name => `<li>${name}</li>`).join('')}</ul>`;
+        }
+        
         return `
             <tr>
                 <td><span class="fw-bold">#${orderId.substring(0, 6).toUpperCase()}</span></td>
-                <td>${order.userName}</td>
-                <td>${order.address}</td>
-                ${productsList}
-                <td>${order.paymentMethod}</td>
+                <td>${order.userName || 'Not Found'}</td>
+                <td>${order.address || 'Not Found'}</td>
+                <td>${products}</td>
+                <td>${totalQuantity}</td>
+                <td>${order.paymentMethod || 'Not Found'}</td>
                 <td>${(order.total || 0).toFixed(2)} EGP</td>
-                <td><span class="badge bg-${orderStatus}">${order.status}</span></td>
+                <td><span class="badge bg-${orderStatus}">${order.status || 'Not Found'}</span></td>
                 <td>${orderDate}</td>
                 <td class="text-end">
                     <button class="btn btn-sm btn-outline-primary edit-btn" data-id="${orderId}"><i class="fas fa-edit"></i></button>
@@ -65,19 +78,21 @@ function createTableRow(docs) {
                 </td>
             </tr>`;
     }).join('');
+
     tbody.innerHTML = rows;
 }
 
 async function displayOrders() {
-    tbody.innerHTML = `<tr><td colspan="10" class="text-center">Loading...</td></tr>`;
+
+    tbody.innerHTML = `<tr><td colspan="9" class="text-center">Loading...</td></tr>`;
     try {
         const ordersCollection = collection(db, "orders");
-        const orderQuerybyDate = query(ordersCollection, orderBy("createdAt"));
+        const orderQuerybyDate = query(ordersCollection); 
         const results = await getDocs(orderQuerybyDate);
         createTableRow(results.docs);
     } catch (error) {
         console.error("Error fetching orders:", error);
-        tbody.innerHTML = `<tr><td colspan="10" class="text-center text-danger">Failed to load data.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="9" class="text-center text-danger">Failed to load data.</td></tr>`;
     }
 }
 
