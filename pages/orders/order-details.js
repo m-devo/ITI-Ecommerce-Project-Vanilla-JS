@@ -51,3 +51,20 @@ if (orderId) {
 } else {
     window.location.href = "./orders.html";
 }
+
+const successMessage = localStorage.getItem('success');
+
+if (successMessage) {
+
+    console.log(successMessage);
+    const alertPlaceholder = document.getElementById('payment-success-alert');
+    
+    if (alertPlaceholder) {
+        alertPlaceholder.classList.remove('d-none'); 
+        setTimeout(() => {
+            alertPlaceholder.classList.add('d-none');
+        }, 5000); 
+    }
+
+    localStorage.removeItem('success');
+}
