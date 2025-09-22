@@ -4,24 +4,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Products Management</title>
+    <title>Products Dashboard</title>
 
     <link rel="stylesheet" href="./admin.css">
     <link rel="stylesheet" href="../../assets/css/all.min.css">
     <link rel="stylesheet" href="../../assets/css/custom.css">
+    <script type="module" src="./admin-products.js" defer></script>
 </head>
 
 <body>
     <header>
-        <div class="px-3 py-2 text-white nav-color">
+        <nav class="text-white nav-color">
             <div class="container">
-                <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
-                    <a href="admin-dashboard.html"
-                        class="d-flex align-items-center my-2 my-lg-0 me-lg-auto text-white text-decoration-none">
+                <div class="admin-panel">
+                    <a href="admin-dashboard.html" id="logo" class="me-lg-auto text-white">
                         <i class="fas fa-cogs fa-2x me-2"></i>
                         <span class="fs-4">Admin Panel</span>
                     </a>
-                    <ul class="nav col-12 col-lg-auto my-2 justify-content-center my-md-0 text-small">
+                    <ul id="navs" class="nav text-small">
                         <li><a href="../../index.html" class="nav-link text-white text-center"><i
                                     class="fas fa-home d-block mx-auto mb-1 fs-4"></i>Home</a></li>
                         <li><a href="admin-dashboard.html" class="nav-link text-white text-center"><i
@@ -35,16 +35,15 @@
                     </ul>
                 </div>
             </div>
-        </div>
-        <div class="px-3 py-2 border-bottom bg-light">
-            <div class="container d-flex flex-wrap justify-content-center">
-                <form class="col-12 col-lg-auto mb-2 mb-lg-0 me-lg-auto">
-                    <input type="search" class="form-control search-expand" placeholder="Search products..."
+        </nav>
+        <div id="nav-padding" class="bg-light">
+            <div class="container">
+                <form class="search-bar">
+                    <input id="search-input" type="search" class="form-control" placeholder="Search products..."
                         aria-label="Search">
                 </form>
                 <div class="dropdown text-end">
-                    <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle" data-bs-toggle="dropdown"
-                        aria-expanded="false">
+                    <a href="#" class="dropdown-toggle logout" data-bs-toggle="dropdown" aria-expanded="false">
                         <img src="https://marketplace.canva.com/Oks3A/MAFG-_Oks3A/1/tl/canva-person-icon-avatar-MAFG-_Oks3A.png"
                             alt="profile-img" width="32" height="32" class="rounded-circle">
                     </a>
@@ -62,13 +61,15 @@
         </div>
     </header>
 
-    <main class="container my-5">
-        <div class="d-flex justify-content-between align-items-center mb-4">
+    <main class="container">
+        <div class="products-dashboard d-flex justify-content-between align-items-center mb-3">
             <div>
                 <h1 class="h3 mb-0">Products</h1>
                 <p class="text-muted mb-0">Manage All Products</p>
             </div>
-            <a href="#" class="btn btn-primary"><i class="fas fa-plus me-2"></i> Add New Product</a>
+            <button id="add-product-btn" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i> Add New Product
+            </button>
         </div>
 
         <div class="card shadow-sm border-0">
@@ -77,7 +78,11 @@
                     <table class="table table-hover align-middle">
                         <thead class="table-light">
                             <tr>
-                                <th scope="col">Product</th>
+                                <th scope="col">Image</th>
+                                <th scope="col">Product Name</th>
+                                <th scope="col">Product Name Lowercase</th>
+                                <th scope="col">isFeatured</th>
+                                <th scope="col">Rating</th>
                                 <th scope="col">SKU</th>
                                 <th scope="col">Category</th>
                                 <th scope="col">Stock</th>
@@ -85,93 +90,122 @@
                                 <th scope="col" class="text-end">Actions</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSj9zTsUw9GLhneuaoFGKsx3WAzZc9qE1SK_w&s"
-                                            class="rounded product-pic" alt="Laptop">
-                                        <span class="fw-bold">Laptop</span>
-                                    </div>
-                                </td>
-                                <td>A-A36f</td>
-                                <td>Electronics</td>
-                                <td><span class="badge bg-success">In Stock</span></td>
-                                <td>500 EGP</td>
-                                <td class="text-end">
-                                    <div class="btn-group">
-                                        <button class="btn btn-sm btn-outline-warning" title="Edit"><i
-                                                class="fas fa-edit"></i></button>
-                                        <button class="btn btn-sm btn-outline-danger" title="Delete"><i
-                                                class="fas fa-trash"></i></button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <img src="https://www.lapcare.com/cdn/shop/files/1_6122ca29-5373-4c4f-97c2-0728ea368fc1.webp?v=1757326029&width=2048"
-                                            class="rounded product-pic" alt="Headphone">
-                                        <span class="fw-bold">Headphone</span>
-                                    </div>
-                                </td>
-                                <td>A-A36f</td>
-                                <td>Electronics</td>
-                                <td><span class="badge bg-danger">Out of Stock</span></td>
-                                <td>500 EGP</td>
-                                <td class="text-end">
-                                    <div class="btn-group">
-                                        <button class="btn btn-sm btn-outline-warning" title="Edit"><i
-                                                class="fas fa-edit"></i></button>
-                                        <button class="btn btn-sm btn-outline-danger" title="Delete"><i
-                                                class="fas fa-trash"></i></button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <img src="https://2b.com.eg/media/catalog/product/cache/661473ab953cdcdf4c3b607144109b90/w/t/wt567-min.jpg"
-                                            class="rounded product-pic" alt="Smartwatch">
-                                        <span class="fw-bold">Smart Watch</span>
-                                    </div>
-                                </td>
-                                <td>A-A36f</td>
-                                <td>Electronics</td>
-                                <td><span class="badge bg-success">In Stock</span></td>
-                                <td>500 EGP</td>
-                                <td class="text-end">
-                                    <div class="btn-group">
-                                        <button class="btn btn-sm btn-outline-warning" title="Edit"><i
-                                                class="fas fa-edit"></i></button>
-                                        <button class="btn btn-sm btn-outline-danger" title="Delete"><i
-                                                class="fas fa-trash"></i></button>
-                                    </div>
-                                </td>
-                            </tr>
+                        <tbody id="products-tbody">
+                            <!-- Dynamic content -->
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
-        <nav aria-label="Page navigation" class="mt-4 d-flex justify-content-center">
-            <ul class="pagination">
-                <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
-                <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                <li class="page-item"><a class="page-link" href="#">3</a></li>
-                <li class="page-item"><a class="page-link" href="#">Next</a></li>
-            </ul>
+
+        <nav aria-label="page navigation" class="products-pagination d-flex justify-content-between align-items-center mt-3">
+            <button id="prev-btn" class="btn btn-outline-primary disabled">
+                <i class="fas fa-arrow-left me-2"></i> Previous
+            </button>
+            <span id="page-counter" class="text-muted">Page 1</span>
+            <button id="next-btn" class="btn btn-primary">
+                Next <i class="fas fa-arrow-right ms-2"></i>
+            </button>
         </nav>
     </main>
 
+    <!-- Product Modal -->
+    <div class="modal fade" id="product-modal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modal-title">Add New Product</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="product-form">
+                        <input type="hidden" id="product-id">
+
+                        <div class="mb-3">
+                            <label for="product-name" class="form-label">Product Name</label>
+                            <input type="text" class="form-control" id="product-name" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="name_lowercase" class="form-label">Product Name Lowercase</label>
+                            <input type="text" class="form-control" id="name_lowercase" readonly>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="rating" class="form-label">Rating</label>
+                            <input type="number" class="form-control" id="rating" step="0.1" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="isFeatured" class="form-label">isFeatured</label>
+                            <select id="isFeatured" class="form-select" required>
+                                <option value="true">true</option>
+                                <option value="false">false</option>
+                            </select>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="product-sku" class="form-label">SKU</label>
+                                <input type="text" class="form-control" id="product-sku" readonly>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="product-category" class="form-label">Category</label>
+                                <input type="text" class="form-control" id="product-category" required>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="product-price" class="form-label">Price (EGP)</label>
+                                <input type="number" step="0.01" class="form-control" id="product-price" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="product-stock" class="form-label">Stock Quantity</label>
+                                <input type="number" class="form-control" id="product-stock" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="product-image-url" class="form-label">Image URL</label>
+                            <input type="url" class="form-control" id="product-image-url"
+                                placeholder="Paste image link here">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" form="product-form" class="btn btn-primary">Save Product</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="delete-confirm-modal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">Confirm Deletion</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete this product? This action cannot be undone.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="confirm-delete-btn">Delete Product</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <footer class="text-white text-center py-3 mt-auto">
-        &copy; 2025 Tech Cave  | <a href="#" class="text-white-50">Privacy Policy</a> | <a href="#"
+        &copy; 2025 Tech Cave | <a href="#" class="text-white-50">Privacy Policy</a> | <a href="#"
             class="text-white-50">Terms</a>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="./admin.js"></script>
 </body>
 
 </html>
