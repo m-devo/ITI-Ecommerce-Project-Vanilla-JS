@@ -162,63 +162,33 @@ window.decreaseQuantity = function (productId) {
 
 // Add to cart functionality
 window.addToCart = function (productId) {
-  console.log(
-    "addToCart called with productId:",
-    productId,
-    "type:",
-    typeof productId
-  );
-  console.log("featuredProducts array:", featuredProducts);
-
   const product = featuredProducts.find((p) => {
-    console.log(
-      "Comparing product.id:",
-      p.id,
-      "type:",
-      typeof p.id,
-      "with productId:",
-      productId
-    );
     return p.id == productId;
   });
-
-  console.log("Found product:", product);
-
   if (!product) {
-    console.error("Product not found with ID:", productId);
     showNotification("Error: Product not found!");
     return;
   }
 
   const qtyInput = document.getElementById(`qty-${productId}`);
-  console.log("Quantity input element:", qtyInput);
   const quantity = parseInt(qtyInput?.value || 1);
-  console.log("Quantity to add:", quantity);
-
   const existingItem = cart.find((item) => item.id == productId);
 
   if (existingItem) {
     existingItem.quantity += quantity;
-    console.log("Updated existing item quantity:", existingItem.quantity);
   } else {
     cart.push({
       ...product,
       quantity: quantity,
     });
-    console.log("Added new item to cart");
   }
 
   // Reset quantity input
   if (qtyInput) {
     qtyInput.value = 1;
   }
-
   localStorage.setItem("cart", JSON.stringify(cart));
-  console.log("Cart saved to localStorage:", cart);
-
-  // Update cart UI
   updateCartUI();
-
   // Show success message
   showNotification(`${product.name} added to cart!`);
 };
@@ -282,7 +252,7 @@ function updateWishlistCount() {
       navWishlist.innerHTML = `Wishlist (${count}) ${icon}`;
     }
   } catch (error) {
-    console.log("Wishlist functions not yet loaded:", error);
+    console.warn("Wishlist functions not yet loaded:", error);
   }
 }
 
