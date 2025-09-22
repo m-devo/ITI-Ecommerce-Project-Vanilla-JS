@@ -1,3 +1,4 @@
+import './auth-guard.js';
 import { db } from "../../config/firebase-config.js";
 import {
     collection,

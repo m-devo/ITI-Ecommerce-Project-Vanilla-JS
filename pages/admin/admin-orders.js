@@ -1,3 +1,4 @@
+import './auth-guard.js'
 import { db } from "../../config/firebase-config.js";
 import {
     collection,
@@ -84,7 +85,7 @@ function createTableRow(docs) {
 
 async function displayOrders() {
 
-    tbody.innerHTML = `<tr><td colspan="9" class="text-center">Loading...</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="10" class="text-center">Loading...</td></tr>`;
     try {
         const ordersCollection = collection(db, "orders");
         const orderQuerybyDate = query(ordersCollection); 
@@ -92,7 +93,7 @@ async function displayOrders() {
         createTableRow(results.docs);
     } catch (error) {
         console.error("Error fetching orders:", error);
-        tbody.innerHTML = `<tr><td colspan="9" class="text-center text-danger">Failed to load data.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="10" class="text-center text-danger">Failed to load data.</td></tr>`;
     }
 }
 
@@ -188,7 +189,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 displayOrders();
                 return;
             }
-            tbody.innerHTML = `<tr><td colspan="7" class="text-center">Searching...</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="10" class="text-center">Searching...</td></tr>`;
             try {
                 const orderQuery = query(
                     collection(db, "orders"),
