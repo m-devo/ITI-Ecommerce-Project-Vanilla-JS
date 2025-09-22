@@ -236,29 +236,17 @@ input:focus {
 .security button {
     margin-right: 10px;
     padding: 10px 15px;
-    border: 1px solid rgb(105, 144, 39);
+    border: none;
     border-radius: 8px;
-    background: #fff;
-    color: #699027;
+    background: rgb(139, 94, 60);
+    color: #fff;
     cursor: pointer;
     font-size: 14px;
     transition: 0.3s ease;
 }
 
+
 .security button:hover {
-    background-color: rgb(105, 144, 39, 0.9);
-    color: #fff;
-}
-
-
-.security button.primary {
-    background: rgb(139, 94, 60);
-    color: #fff;
-    border: none;
-    transition: 0.3s ease;
-}
-
-.security button.primary:hover {
     background-color: rgb(139, 94, 60, 0.8);
 }
 
