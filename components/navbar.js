@@ -1,9 +1,26 @@
 import { brandName, paths , homePath , basePath} from "../config/main.js";
 
+import { auth, db, storage } from '../assets/js/firebase-config.js';
+
+import {
+    onAuthStateChanged,
+    signOut,
+    updateEmail,
+    updatePassword
+} from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
+import {
+    doc, getDoc, updateDoc
+} from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+import {
+    ref, uploadBytes, getDownloadURL
+} from "https://www.gstatic.com/firebasejs/9.15.0/firebase-storage.js";
+
 console.log(paths);
 
 class MainNavbar extends HTMLElement {
+    
     connectedCallback() {
+
         let currentCart = JSON.parse(localStorage.getItem("cart")) || [];
 
         let wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
@@ -33,17 +50,18 @@ class MainNavbar extends HTMLElement {
                     </div>
 
                     <div class="dropdown">
-                    <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        Account
+                    <button class="btn btn-primary dropdown-toggle dropdown-account" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                     </button>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="${basePath}/pages/auth/login.html">Login</a></li>
-                        <li><a class="dropdown-item" href="${basePath}/pages/auth/Register.html">Register</a></li>
+                    <ul class="dropdown-menu dropdown-menu-account">
                     </ul>
                     </div>
+
                 </div>
             </nav>
         `;
+
+        let accountDropdown = document.querySelector(".dropdown-account");
+        let accountDropdownMenu = document.querySelector(".dropdown-menu-account");
 
 
         (function updateCartUI() {
@@ -75,6 +93,46 @@ class MainNavbar extends HTMLElement {
                 navWishlist.innerHTML = `Wishlist (${count}) ${icon}`;
             }
         })();
+
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+
+                console.log("user", user);
+
+                // accountDropdown.innerHTML = user.first_name;
+
+        
+                const userRef = doc(db, "users", user.uid);
+                const docSnap = await getDoc(userRef);
+        
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+
+                    console.log("data", data.fname);
+
+                    accountDropdown.innerHTML = data.fname;
+                    accountDropdownMenu.innerHTML = `
+                        <li><a class="dropdown-item" href="${basePath}/pages/profile/profile.html">Profile</a></li>
+                        <li><a class="sign-out dropdown-item" href="#">Logout</a></li>
+                    `;
+
+                    const signOutButton = document.querySelector(".sign-out");
+                    if (signOutButton) {
+                        signOutButton.addEventListener("click", async () => {
+                            await signOut(auth);
+                            location.reload();
+                        });
+                    }
+                }
+            } else {
+                    accountDropdown.innerHTML = "Account";
+                    accountDropdownMenu.innerHTML = `
+                        <li><a class="dropdown-item" href="${basePath}/pages/auth/login.html">Login</a></li>
+                        <li><a class="dropdown-item" href="${basePath}/pages/auth/Register.html">Register</a></li>
+                    `;
+            }
+        });
 
 
     }
