@@ -97,7 +97,7 @@ changePicBtn.addEventListener("click", () => {
 
                 localStorage.setItem(`profilePic_${user.uid}`, base64Image);
 
-                alert("Profile picture updated locally for this user! ✅");
+                alert("Profile picture updated successfully! ✅");
             };
 
             reader.onerror = (err) => {
@@ -141,8 +141,13 @@ changePassBtn.addEventListener("click", async () => {
         await updatePassword(user, newPassword);
         alert("Password updated successfully! ✅");
     } catch (error) {
-        console.error(error);
-        alert("❌ Error updating password: " + error.message);
+        if (error.code === "auth/wrong-password" || error.code === "auth/invalid-login-credentials") {
+            alert("❌ The current password you entered is incorrect.");
+        } else if (error.code === "auth/requires-recent-login") {
+            alert("⚠️ Please log in again before trying to update your password.");
+        } else {
+            alert("❌ Error updating password: " + error.message);
+        }
     }
 });
 
