@@ -64,26 +64,25 @@ function addProductToCart(product, quantity = 1) {
         renderCart();
     }
 }
-
-function removeProductFromCart(productId) {
-    let cart = getCart();
-    const itemToRemove = cart.find((item) => item.id === productId);
-    const updatedCart = cart.filter((item) => item.id !== productId);
-    saveCart(updatedCart);
-    if (itemToRemove) {
-        showNotification(`${itemToRemove.name} Deleted from Cart.`, "danger");
-    }
-}
-
 function updateProductQuantity(productId, newQuantity) {
     let cart = getCart();
-    const itemToUpdate = cart.find((item) => item.id === productId);
+
+    const itemToUpdate = cart.find((item) => String(item.id) === String(productId));
     if (itemToUpdate) {
         itemToUpdate.quantity = newQuantity;
     }
     saveCart(cart);
 }
 
+function removeProductFromCart(productId) {
+    let cart = getCart();
+    const itemToRemove = cart.find((item) => String(item.id) === String(productId));
+    const updatedCart = cart.filter((item) => String(item.id) !== String(productId));
+    saveCart(updatedCart);
+    if (itemToRemove) {
+        showNotification(`${itemToRemove.name} Deleted from Cart.`, "danger");
+    }
+}
 function getCartSubtotal() {
     return getCart().reduce(
         (total, item) => total + item.price * item.quantity,
@@ -160,11 +159,11 @@ function updateSummary() {
     shippingEl.textContent = `${shipping.toFixed(2)} EGP`;
     totalEl.textContent = `${total.toFixed(2)} EGP`;
 }
-
 function attachCartEventListeners() {
     document.querySelectorAll(".remove-btn").forEach((button) => {
         button.addEventListener("click", (event) => {
-            productIdToDelete = parseInt(event.target.dataset.id);
+            // لا تستخدم parseInt هنا
+            productIdToDelete = event.target.dataset.id;
             const modal = new bootstrap.Modal(
                 document.getElementById("confirm-dialog")
             );
@@ -174,7 +173,8 @@ function attachCartEventListeners() {
 
     document.querySelectorAll(".quantity-input").forEach((input) => {
         input.addEventListener("change", (event) => {
-            const productId = parseInt(event.target.dataset.id);
+
+            const productId = event.target.dataset.id; 
             const newQuantity = parseInt(event.target.value);
             if (newQuantity < 1) {
                 productIdToDelete = productId;
@@ -182,7 +182,6 @@ function attachCartEventListeners() {
                     document.getElementById("confirm-dialog")
                 );
                 modal.show();
-                renderCart();
             } else {
                 updateProductQuantity(productId, newQuantity);
                 renderCart();
@@ -190,7 +189,6 @@ function attachCartEventListeners() {
         });
     });
 }
-
 /* ---- You might like section ---- */
 async function loadRelatedProducts() {
     try {
@@ -284,13 +282,13 @@ async function loadRelatedProducts() {
                 "<p class='text-center text-danger col-12'>Could not load related products.</p>";
     }
 }
-
 function attachRelatedProductsListeners() {
     document.querySelectorAll(".add-to-cart-btn").forEach((button) => {
         button.addEventListener("click", (event) => {
             const productData = event.target.dataset;
             const product = {
-                id: parseInt(productData.id),
+
+                id: productData.id, 
                 name: productData.name,
                 price: parseFloat(productData.price),
                 image: productData.image,
