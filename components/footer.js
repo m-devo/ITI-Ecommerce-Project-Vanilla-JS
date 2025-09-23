@@ -12,7 +12,7 @@ class MainFooter extends HTMLElement {
         `).join("");
 
         this.innerHTML = `
-            <footer class="bg-light text-center py-3">
+            <footer class="bg-dark text-light text-center py-3">
                 <div class="container">
                     <div class="row justify-content-between pt-5 align-items-center">
                         <div class="col-12 col-md-4">
