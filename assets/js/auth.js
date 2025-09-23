@@ -122,7 +122,7 @@ if (loginForm) {
                 ? browserLocalPersistence
                 : browserSessionPersistence;
 
-            await setPersistence(auth, persistenceType);
+            await setPersistence(auth, browserLocalPersistence);
 
 
             await signInWithEmailAndPassword(auth, email, password);
