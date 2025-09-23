@@ -63,7 +63,7 @@ if (cart.length > 0) {
                         <small class="text-muted d-block">Quantity: ${item.quantity}</small>
                         <small class="text-muted">Item Price: ${item.price}$</small>
                     </div>
-                    <span class="text-muted">${item.price.toFixed(2) * item.quantity}$</span>
+                    <span class="text-muted">${(item.price * item.quantity).toFixed(2)}$</span>
                 </li>
             </ul>
         `;
