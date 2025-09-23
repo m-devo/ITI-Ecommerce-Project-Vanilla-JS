@@ -352,7 +352,7 @@ saveProductBtn.addEventListener("click", async () => {
             price: price,
             stock: stock,
             category: category,
-            imageUrl: finalImageUrl,                /*<<<<<<<<<<final url whether Cloudinary or odinary url  */
+            image: finalImageUrl,                /*<<<<<<<<<<final url whether Cloudinary or odinary url  */
             createdAt: serverTimestamp(),
         });
 
