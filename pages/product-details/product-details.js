@@ -55,8 +55,14 @@ async function loadProductDetails() {
                 product.category
               )}</li>
               <li><strong>Stock:</strong> <span class="text-${
-                product.stock > 10 ? "success" : "warning"
-              }">${product.stock} items available</span></li>
+                product.stock > 10
+                  ? "success"
+                  : product.stock > 0
+                  ? "warning"
+                  : "danger"
+              }">${
+    product.stock > 0 ? `${product.stock} items available` : "Out of stock"
+  }</span></li>
               <li><strong>SKU:</strong> PRD-${product.id
                 .toString()
                 .padStart(4, "0")}</li>
@@ -67,17 +73,25 @@ async function loadProductDetails() {
             <div class="quantity-controls mb-3 d-flex align-items-center gap-3">
               <label for="detail-qty" class="form-label">Quantity:</label>
               <div class="d-flex">
-                <button class="quantity-btn" onclick="decreaseDetailQuantity()">-</button>
+                <button class="quantity-btn" ${
+                  product.stock === 0 ? "disabled" : ""
+                } onclick="decreaseDetailQuantity()">-</button>
                 <input type="number" class="quantity-input" id="detail-qty" value="1" min="1" max="${
                   product.stock
-                }">
-                <button class="quantity-btn" onclick="increaseDetailQuantity()">+</button>
+                }" ${product.stock === 0 ? "disabled" : ""}>
+                <button class="quantity-btn" ${
+                  product.stock === 0 ? "disabled" : ""
+                } onclick="increaseDetailQuantity()">+</button>
               </div>
             </div>
             
             <div class="d-grid gap-2 d-md-block">
-              <button class="btn btn-primary btn-lg" onclick="addToCartFromDetails()">
-                <i class="fas fa-shopping-cart"></i> Add to Cart
+              <button class="btn btn-primary btn-lg" ${
+                product.stock === 0 ? "disabled" : ""
+              } onclick="addToCartFromDetails()">
+                <i class="fas fa-shopping-cart"></i> ${
+                  product.stock === 0 ? "Out of Stock" : "Add to Cart"
+                }
               </button>
             </div>
           </div>
@@ -108,7 +122,10 @@ window.decreaseDetailQuantity = function () {
 window.addToCartFromDetails = function () {
   const qtyInput = document.getElementById("detail-qty");
   const quantity = parseInt(qtyInput.value) || 1;
-
+  if (!product.stock || product.stock <= 0) {
+    showNotification(`${product?.name || "Product"} is out of stock`);
+    return;
+  }
   addToCart(product.id, quantity);
   qtyInput.value = 1;
 };
@@ -198,6 +215,10 @@ function getCategoryName(category) {
 }
 
 function addToCart(productId, quantity = 1) {
+  if (!product || !product.stock || product.stock <= 0) {
+    showNotification(`${product?.name || "Product"} is out of stock`);
+    return;
+  }
   const existingItem = currentCart.find((item) => item.id === productId);
 
   if (existingItem) {
@@ -273,4 +294,3 @@ function updateWishlistCount() {
 window.viewProductDetails = function (productId) {
   window.location.href = `product-details.html?id=${productId}`;
 };
-

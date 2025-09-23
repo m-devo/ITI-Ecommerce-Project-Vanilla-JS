@@ -68,24 +68,32 @@ async function displayFeaturedProducts() {
               ${generateStars(product.rating)} (${product.rating})
             </div>
             <div class="product-stock">
-              ${product.stock} left
+              ${
+                product.stock > 0
+                  ? `${product.stock} left`
+                  : '<span class="text-danger">Out of stock</span>'
+              }
             </div>
           </div>
           <div class="quantity-controls" onclick="event.stopPropagation()">
-            <button class="quantity-btn" onclick="decreaseQuantity('${
-              product.id
-            }')">-</button>
+            <button class="quantity-btn" ${
+              product.stock === 0 ? "disabled" : ""
+            } onclick="decreaseQuantity('${product.id}')">-</button>
             <input type="number" class="quantity-input" id="qty-${
               product.id
-            }" value="1" min="1" max="${product.stock}">
-            <button class="quantity-btn" onclick="increaseQuantity('${
-              product.id
-            }')">+</button>
+            }" value="1" min="1" max="${product.stock}" ${
+        product.stock === 0 ? "disabled" : ""
+      }>
+            <button class="quantity-btn" ${
+              product.stock === 0 ? "disabled" : ""
+            } onclick="increaseQuantity('${product.id}')">+</button>
           </div>
-          <button class="add-to-cart-btn" onclick="event.stopPropagation(); addToCart('${
-            product.id
-          }')">
-            <i class="fas fa-shopping-cart"></i> Add to Cart
+          <button class="add-to-cart-btn" ${
+            product.stock === 0 ? "disabled" : ""
+          } onclick="event.stopPropagation(); addToCart('${product.id}')">
+            <i class="fas fa-shopping-cart"></i> ${
+              product.stock === 0 ? "Out of Stock" : "Add to Cart"
+            }
           </button>
         </div>
       </div>
@@ -137,6 +145,11 @@ window.decreaseQuantity = function (productId) {
 
 window.addToCart = function (productId) {
   const product = featuredProducts.find((p) => p.id == productId);
+  if (!product) return;
+  if (!product.stock || product.stock <= 0) {
+    showNotification(`${product?.name || "Product"} is out of stock`);
+    return;
+  }
   const qtyInput = document.getElementById(`qty-${productId}`);
   const quantity = parseInt(qtyInput?.value || 1);
   const existingItem = cart.find((item) => item.id == productId);
