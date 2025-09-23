@@ -46,10 +46,10 @@ function updateCartIcon() {
         cartLink.innerHTML = `Cart (${cartCount}) <i class="fas fa-shopping-cart"></i>`;
     }
 }
-
 function addProductToCart(product, quantity = 1) {
     let cart = getCart();
-    const existingItem = cart.find((item) => item.id === product.id);
+
+    const existingItem = cart.find((item) => item.id == product.id);
 
     if (existingItem) {
         existingItem.quantity += quantity;
@@ -64,10 +64,11 @@ function addProductToCart(product, quantity = 1) {
         renderCart();
     }
 }
+
 function updateProductQuantity(productId, newQuantity) {
     let cart = getCart();
 
-    const itemToUpdate = cart.find((item) => String(item.id) === String(productId));
+    const itemToUpdate = cart.find((item) => item.id == productId);
     if (itemToUpdate) {
         itemToUpdate.quantity = newQuantity;
     }
@@ -76,13 +77,15 @@ function updateProductQuantity(productId, newQuantity) {
 
 function removeProductFromCart(productId) {
     let cart = getCart();
-    const itemToRemove = cart.find((item) => String(item.id) === String(productId));
-    const updatedCart = cart.filter((item) => String(item.id) !== String(productId));
+    const itemToRemove = cart.find((item) => item.id == productId);
+
+    const updatedCart = cart.filter((item) => item.id != productId);
     saveCart(updatedCart);
     if (itemToRemove) {
         showNotification(`${itemToRemove.name} Deleted from Cart.`, "danger");
     }
 }
+
 function getCartSubtotal() {
     return getCart().reduce(
         (total, item) => total + item.price * item.quantity,
