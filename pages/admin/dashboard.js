@@ -1,3 +1,4 @@
+import './auth-guard.js'
 import { db } from "../../config/firebase-config.js";
 import {
     collection,
@@ -39,7 +40,7 @@ async function calculateEarnings(timeRange) {
 
     try {
         const ordersQuery = query(collection(db, "orders"), where("status", "==", "delivered"),
-            where("createdAt", ">=", Timestamp.fromDate(startDate))
+            // where("createdAt", ">=", Timestamp.fromDate(startDate)), 
         );
 
         const results = await getDocs(ordersQuery);
@@ -48,7 +49,7 @@ async function calculateEarnings(timeRange) {
         results.forEach(function (doc) {
             {
                 const data = doc.data();
-                totalEarnings += Number(data.totalPrice) || 0;
+                totalEarnings += Number(data.total) || 0;
             }
         });
 
@@ -351,7 +352,7 @@ saveProductBtn.addEventListener("click", async () => {
             price: price,
             stock: stock,
             category: category,
-            imageUrl: finalImageUrl,                /*<<<<<<<<<<final url whether Cloudinary or odinary url  */
+            image: finalImageUrl,                /*<<<<<<<<<<final url whether Cloudinary or odinary url  */
             createdAt: serverTimestamp(),
         });
 
@@ -394,7 +395,8 @@ async function loadRecentOrders() {
     try {
         const ordesSearchQuery = query(
             collection(db, "orders"),
-            orderBy("createdAt", "desc"),
+            // orderBy("createdAt", "desc"),
+            orderBy("userName"),
             limit(5)
         );
         const results = await getDocs(ordesSearchQuery);
@@ -411,7 +413,7 @@ async function loadRecentOrders() {
             recentActivityRow += `
                 <tr>
                     <td>#${doc.id.substring(0, 6)}</td>
-                    <td>${order.id || "N/A"}</td>
+                    <td>${order.userName || "N/A"}</td>
                     <td>${getStatusBadge(order.status)}</td>
                 </tr>
             `;
@@ -479,8 +481,11 @@ async function loadRecentActivities() {
         latestActivities.forEach((activity) => {
             switch (activity.type) {
                 case "user":
-                    recentActivities += `<li class="list-group-item"><i class="fas fa-user-plus text-success me-2"></i> New user <b>${activity.data.name || "Unnamed"
-                        }</b> registered.</li>`
+                    const fullName = `${activity.data.fname || ''} ${activity.data.lname || ''}`.trim();
+                    const displayName = fullName || activity.data.email || "Unnamed";
+                    
+                    recentActivities += `<li class="list-group-item"><i class="fas fa-user-plus text-success me-2"></i> New user <b>${displayName}</b> registered.</li>`;
+                    break;
                     break;
                 case "product":
                     recentActivities += `<li class="list-group-item"><i class="fas fa-box text-primary me-2"></i> Product <b>${activity.data.name}</b> was added.</li>`;

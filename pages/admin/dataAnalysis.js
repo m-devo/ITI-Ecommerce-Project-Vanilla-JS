@@ -55,11 +55,11 @@ async function updateEarningsChart() {
         ordersData.forEach(doc => {
             const order = doc.data();
             console.log(doc.data());
-            if (order.createdAt && order.totalPrice) {
+            if (order.createdAt && order.total) {
                 const orderDate = order.createdAt.toDate();
                 if (orderDate.getFullYear() === currentYear) {
                     const month = orderDate.getMonth();
-                    monthlyEarnings[month] += order.totalPrice;
+                    monthlyEarnings[month] += order.total;
                 }
             }
         });

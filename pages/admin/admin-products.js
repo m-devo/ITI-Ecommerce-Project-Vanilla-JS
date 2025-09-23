@@ -1,3 +1,4 @@
+import './auth-guard.js'
 import { db } from "../../config/firebase-config.js";
 import {
     collection,
@@ -40,7 +41,7 @@ function createTableRow(docs) {
                 <td><span class="fw-bold">${product.name_lowercase}</span></td>
                 <td><span class="fw-bold">${product.isFeatured}</span></td>
                 <td><span class="fw-bold">${product.rating}</span></td>
-                <td>${product.sku}</td>
+                <td>${product.sku || "No SKU"}</td>
                 <td>${product.category}</td>
                 <td><span class="badge bg-${stockStatus}">${stockText}</span></td>
                 <td>${(product.price || 0).toFixed(2)} EGP</td>
@@ -183,4 +184,3 @@ document.addEventListener("DOMContentLoaded", async () => {
         }, 600);
     });
 })
-

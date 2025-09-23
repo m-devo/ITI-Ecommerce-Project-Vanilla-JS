@@ -122,7 +122,7 @@ if (loginForm) {
                 ? browserLocalPersistence
                 : browserSessionPersistence;
 
-            await setPersistence(auth, persistenceType);
+            await setPersistence(auth, browserLocalPersistence);
 
 
             await signInWithEmailAndPassword(auth, email, password);
@@ -130,7 +130,7 @@ if (loginForm) {
 
             errorMessageDiv.innerText = "";
             errorMessageDiv.style.display = "none";
-            window.location.replace('../profile/profile.html');
+            window.location.replace('../../index.html');
 
         } catch (error) {
             console.log("Firebase Error:", error);
