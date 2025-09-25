@@ -165,7 +165,7 @@ function updateSummary() {
 function attachCartEventListeners() {
     document.querySelectorAll(".remove-btn").forEach((button) => {
         button.addEventListener("click", (event) => {
-            // لا تستخدم parseInt هنا
+
             productIdToDelete = event.target.dataset.id;
             const modal = new bootstrap.Modal(
                 document.getElementById("confirm-dialog")
@@ -225,7 +225,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     renderCart();
     updateCartIcon();
-    loadRelatedProducts();
     updateWishlistCount();
 });
 
