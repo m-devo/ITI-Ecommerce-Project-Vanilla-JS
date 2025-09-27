@@ -139,9 +139,14 @@ if (loginForm) {
     const rememberMeCheckbox = document.getElementById("rememberMe");
 
     try {
-      const persistenceType = rememberMeCheckbox.checked
-        ? browserLocalPersistence
-        : browserSessionPersistence;
+            const persistenceType = rememberMeCheckbox.checked
+                ? browserLocalPersistence
+                : browserSessionPersistence;
+
+            await setPersistence(auth, browserLocalPersistence);
+
+
+            await signInWithEmailAndPassword(auth, email, password);
 
       await setPersistence(auth, persistenceType);
 

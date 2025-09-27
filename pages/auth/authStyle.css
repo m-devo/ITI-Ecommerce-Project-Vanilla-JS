@@ -12,7 +12,7 @@ body {
   justify-content: center;
   align-items: flex-start;
   min-height: 100vh;
-  background: url("hero.jpg") no-repeat;
+  background: url("../../assets/images/hero.jpeg") no-repeat;
   background-size: cover;
   background-position: center;
   padding: 20px;

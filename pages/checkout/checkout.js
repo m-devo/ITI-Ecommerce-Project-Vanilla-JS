@@ -63,7 +63,7 @@ if (cart.length > 0) {
                         <small class="text-muted d-block">Quantity: ${item.quantity}</small>
                         <small class="text-muted">Item Price: ${item.price}$</small>
                     </div>
-                    <span class="text-muted">${item.price.toFixed(2) * item.quantity}$</span>
+                    <span class="text-muted">${(item.price * item.quantity).toFixed(2)}$</span>
                 </li>
             </ul>
         `;
@@ -170,7 +170,6 @@ form.addEventListener('submit', async (event) => {
 
     try {
         let orderPaymentMethod;
-
         if (selectedPaymentMethod === 'credit') {
             const { paymentMethod, error } = await stripe.createPaymentMethod({
                 type: 'card',
@@ -196,13 +195,27 @@ form.addEventListener('submit', async (event) => {
             };
         }
 
-        const orderId = await createOrder(cart, total, address, orderPaymentMethod);
+        try {
 
-        localStorage.removeItem('cart');
+            const orderId = await createOrder(cart, total, address, orderPaymentMethod);
 
-        localStorage.setItem('success', 'Your order has been placed successfully! id: ' + orderId);
+            localStorage.removeItem('cart');
 
-        window.location.href = `../orders/order-details.html?id=${orderId}`;
+            localStorage.setItem('success', 'Your order has been placed successfully! id: ' + orderId);
+            window.location.href = `../orders/order-details.html?id=${orderId}`;
+
+        } catch (orderError) {
+            console.error("Failed to create order:", orderError);
+            if (!cardErrors.textContent) {
+                cardErrors.textContent = "Could not process your order. Please try again.";
+            }
+            submitButton.disabled = false;
+            spinner.classList.add('d-none');
+            updatePaymentMethodUI(); 
+        }
+
+
+
     } catch (orderError) {
         console.error("Failed to process payment or create order:", orderError);
         if (!cardErrors.textContent) {
