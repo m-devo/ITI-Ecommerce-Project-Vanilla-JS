@@ -250,7 +250,7 @@ document.addEventListener("DOMContentLoaded", () => {
         productIdToDelete = null;
         bootstrap.Modal.getInstance(document.getElementById("confirm-dialog")).hide();
     });
-
+//-------------------- Cart Sync ---------------------------------------//
 onAuthStateChanged(auth, async (user) => {
     currentUser = user || null;
 
@@ -295,7 +295,7 @@ function getWishlist() {
         return [];
     }
 }
-
+//-------------------- Stock Validation ---------------------------------------//
 async function mergeLocalCartToFirestore() {
     const localCart = getCart();
     const cartQuery = doc(db, "users", currentUser.uid, "cart", "cart");
