@@ -1,4 +1,3 @@
-
 import { doc, getDoc, setDoc, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 import { auth, db } from "../config/firebase-config.js";
 import { fetchProductById } from "./products.js";
@@ -14,28 +13,27 @@ export async function getCart() {
         const cartSnap = await getDoc(cartRef);
         return cartSnap.exists() ? cartSnap.data().items : [];
     } else {
-        return localStorage.getItem('cart') ? JSON.parse(localStorage.getItem('cart')) : [];
+        return localCart;
     }
 }
 
-export async function syncCartOnLogin(userId) {
+export async function syncCartOnLogin(userId, renderCartCallback, updateCartUICallback) {
     const cartRef = doc(db, "carts", userId);
 
     const cartSnap = await getDoc(cartRef);
     const remoteCart = cartSnap.exists() ? cartSnap.data().items : [];
 
     const mergedCart = mergeCarts(localCart, remoteCart);
-    
     await setDoc(cartRef, { items: mergedCart });
 
-    // listening for real-time updates
-    unsubscribeCartListener = onSnapshot(cartRef, (doc) => {
-        const updatedCart = doc.exists() ? doc.data().items : [];
-        // Update local state and UI whenever Firestore changes
-        localCart = updatedCart; 
-        updateCartUI(localCart);
+    unsubscribeCartListener = onSnapshot(cartRef, (docSnap) => {
+        const updatedCart = docSnap.exists() ? docSnap.data().items : [];
+        localCart = updatedCart;
+        renderCartCallback(updatedCart);
+        updateCartUICallback(updatedCart);
     });
 
+    localStorage.removeItem('cart');
     console.log('Cart synced with Firestore');
 }
 
@@ -56,83 +54,78 @@ function mergeCarts(local = [], remote = []) {
         }
     });
 
-    localStorage.removeItem('cart');
     return merged;
 }
 
-
 export async function updateCart(productId, quantity = 1) {
-
     const user = auth.currentUser;
-
     const product = await fetchProductById(productId);
 
     let cart = await getCart();
-
-    console.log("🚀 ~ updateCart ~ userCart:", cart)
-
     const existingItem = cart.find(item => item.productId === product.id);
     let currentQuantity = existingItem ? Number(existingItem.quantity) : 0;
-    
-    console.log("🚀 ~ updateCart ~ currentQuantity:", currentQuantity)
-    
     quantity = currentQuantity + quantity;
 
-    console.log("🚀 ~ updateCart ~ quantity:", quantity)
-
-    // check stock
     if (product.stock < quantity) {
-        if (product.stock > 0) {
-            showNotification(`${product?.name || "Product"} Max Quantity is ${product.stock}`, "danger");            
-        } else {
-            showNotification(`${product?.name || "Product"} is out of stock`, "danger");
-        }
-        console.log("Product is out of stock");
+        showNotification(`You can’t add more than ${product.stock}!`, "danger");
         return;
     }
 
     if (user) {
         const cartRef = doc(db, "carts", user.uid);
-
-        // update quantity if product already exists in cart
         const existingItemIndex = cart.findIndex(item => item.productId === product.id);
+
         if (existingItemIndex !== -1) {
             cart[existingItemIndex].quantity = quantity;
-
-            await setDoc(cartRef, { items: cart });
-            console.log("🚀 ~ updateCart ~ cart:", cart)
         } else {
-            // add new product to cart
-
-            const newCartItems = [...cart, { productId: product.id, quantity: quantity, price: product.price, name: product.name, image: product.image, category: product.category, description: product.description , id: product.id, stock: product.stock }];
-
-            await setDoc(cartRef, { items: newCartItems });
-            console.log("🚀 ~ updateCart ~ newCartItems:", newCartItems)
+            cart.push({
+                productId: product.id,
+                quantity: quantity,
+                price: product.price,
+                name: product.name,
+                image: product.image,
+                category: product.category,
+                description: product.description,
+                id: product.id,
+                stock: product.stock
+            });
         }
-
-
+        await setDoc(cartRef, { items: cart });
+        showNotification(`${product.name} added to cart!`, "success");
     } else {
-        // User is a guest, update localStorage
-        localCart.push({ productId: product.id, quantity: quantity, price: product.price, name: product.name, image: product.image, category: product.category, description: product.description , id: product.id, stock: product.stock });
+        const localItemIndex = localCart.findIndex(item => item.productId === product.id);
+        if (localItemIndex !== -1) {
+            localCart[localItemIndex].quantity = quantity;
+        } else {
+            localCart.push({
+                productId: product.id,
+                quantity: quantity,
+                price: product.price,
+                name: product.name,
+                image: product.image,
+                category: product.category,
+                description: product.description,
+                id: product.id,
+                stock: product.stock
+            });
+        }
         localStorage.setItem('cart', JSON.stringify(localCart));
         updateCartUI(localCart);
+        showNotification(`${product.name} added to cart!`, "success");
     }
-
-    showNotification(`${product.name} added to cart!`);
 }
 
-export async function updateItemQuantity(productId, quantity) {
 
-    let product = await fetchProductById(productId);
+
+export async function updateItemQuantity(productId, quantity) {
+    const product = await fetchProductById(productId);
 
     if (product.stock < quantity) {
         if (product.stock > 0) {
-            showNotification(`${product?.name || "Product"} Max Quantity is ${product.stock}`, "danger");            
+            showNotification(`Max quantity for "${product.name}" is ${product.stock}`, "danger");
         } else {
-            showNotification(`${product?.name || "Product"} is out of stock`, "danger");
+            showNotification(`"${product.name}" is out of stock`, "danger");
         }
-
-        console.log("Product is out of stock");
         return;
     }
 
@@ -143,74 +136,67 @@ export async function updateItemQuantity(productId, quantity) {
         const cartSnap = await getDoc(cartRef);
         const cartItems = cartSnap.exists() ? cartSnap.data().items : [];
 
-        const updatedCartItems = cartItems.map(item => {
-            if (item.productId === productId) {
-                return { ...item, quantity };
-            }
-            return item;
-        });
-
-
+        const updatedCartItems = cartItems.map(item =>
+            item.productId === productId ? { ...item, quantity } : item
+        );
 
         await updateDoc(cartRef, { items: updatedCartItems });
-
-        showNotification(`Item quantity updated!`);
+        showNotification(`Quantity for "${product.name}" updated to ${quantity}`, "success");
     } else {
-        const cart = localStorage.getItem('cart');
-        const updatedCart = JSON.parse(cart).map(item => {
-            if (item.productId === productId) {
-                return { ...item, quantity };
-            }
-            return item;
-        });
+        const updatedCart = localCart.map(item =>
+            item.productId === productId ? { ...item, quantity } : item
+        );
+        localCart = updatedCart;
         localStorage.setItem('cart', JSON.stringify(updatedCart));
-        showNotification(`Item quantity updated!`);
         updateCartUI(updatedCart);
+        showNotification(`Quantity for "${product.name}" updated to ${quantity}`, "success");
     }
 }
 
-
-
-export async function removeItemFromCart(productId) {
+export async function removeItemFromCart(productId, renderCartCallback) {
     const user = auth.currentUser;
+    let updatedCart = [];
 
     if (user) {
         const cartRef = doc(db, "carts", user.uid);
-        const newCartItems = localCart.filter(item => item.productId !== productId);
+        const cartSnap = await getDoc(cartRef);
+        const currentItems = cartSnap.exists() ? cartSnap.data().items : [];
+        updatedCart = currentItems.filter(item => item.productId !== productId);
 
-        await setDoc(cartRef, { items: newCartItems });
+        await setDoc(cartRef, { items: updatedCart });
     } else {
-
-        localCart = localCart.filter(item => item.productId !== productId);
+        updatedCart = localCart.filter(item => item.productId !== productId);
+        localCart = updatedCart;
         localStorage.setItem('cart', JSON.stringify(localCart));
-        updateCartUI(localCart);
     }
 
-    showNotification(`Item removed from cart!`);
-}
-
-function updateCartUI(cart) {
-    const cartCount = cart.reduce(
-        (total, item) => total + item.quantity,
-        0
-    );
-    const cartLink = document.querySelector('.navbar .nav-link[href*="cart"]');
-    if (cartLink) {
-        cartLink.innerHTML = `Cart (${cartCount}) <i class="fas fa-shopping-cart"></i>`;
+    if (typeof renderCartCallback === "function") {
+        renderCartCallback(updatedCart); 
     }
+
+    updateCartUI(updatedCart);
+    showNotification(`Item removed from cart!`, "success");
 }
 
-export async function clearCart() {
+export async function clearCart(renderCartCallback) {
     const user = auth.currentUser;
+
     if (user) {
         const cartRef = doc(db, "carts", user.uid);
         await setDoc(cartRef, { items: [] });
     } else {
+        localCart = [];
         localStorage.removeItem('cart');
-        updateCartUI([]);
     }
-    showNotification(`Cart cleared!`);
+
+    if (typeof renderCartCallback === "function") {
+        renderCartCallback([]);
+    }
+
+    updateCartUI([]);
+    showNotification(`Cart cleared!`, "success");
 }
+
 
 function showNotification(message, type = "success") {
     const notification = document.createElement("div");
@@ -222,11 +208,14 @@ function showNotification(message, type = "success") {
         <i class="fas fa-${icon}"></i> ${message}
         <button type="button" class="btn-close float-end" onclick="this.parentElement.remove()"></button>
     `;
-
     document.body.appendChild(notification);
-    setTimeout(() => {
-        if (notification.parentElement) {
-        notification.remove();
-        }
-    }, 3000);
+    setTimeout(() => notification.remove(), 3000);
+}
+
+function updateCartUI(cart) {
+    const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
+    const cartLink = document.querySelector('.navbar .nav-link[href*="cart"]');
+    if (cartLink) {
+        cartLink.innerHTML = `Cart (${cartCount}) <i class="fas fa-shopping-cart"></i>`;
+    }
 }
