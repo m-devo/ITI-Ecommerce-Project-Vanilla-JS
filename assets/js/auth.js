@@ -96,31 +96,30 @@ if (registerForm) {
         "Verification email sent. Please check your inbox! ✅";
       successMessageDiv.style.display = "block";
 
-      await setDoc(doc(db, "users", user.uid), {
-        fname: Fname,
-        lname: Lname,
-        email: email,
-        phone: phone,
-        role: "user",
-        createdAt: new Date(),
-        verified: false,
-      });
-
-      errorMessageDiv.innerText = "";
-      errorMessageDiv.style.display = "none";
-
       const checkVerification = setInterval(async () => {
         await user.reload();
         if (user.emailVerified) {
           clearInterval(checkVerification);
+
+          await setDoc(doc(db, "users", user.uid), {
+            fname: Fname,
+            lname: Lname,
+            email: email,
+            phone: phone,
+            role: "user",
+            createdAt: new Date(),
+            verified: true,
+          });
+
+          errorMessageDiv.innerText = "";
+          errorMessageDiv.style.display = "none";
+
           successMessageDiv.innerText = "Email verified! ✅ Redirecting...";
           setTimeout(() => {
             window.location.replace("../../index.html");
           }, 1500);
         }
       }, 3000);
-
-
     } catch (error) {
       errorMessageDiv.innerText = getErrorMessage(error);
       errorMessageDiv.style.display = "block";
@@ -150,7 +149,19 @@ if (loginForm) {
 
       await setPersistence(auth, persistenceType);
 
-      await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      const user = userCredential.user;
+
+      if (!user.emailVerified) {
+        errorMessageDiv.innerText =
+          "Please verify your email before logging in.";
+        errorMessageDiv.style.display = "block";
+        return;
+      }
 
       errorMessageDiv.innerText = "";
       errorMessageDiv.style.display = "none";
