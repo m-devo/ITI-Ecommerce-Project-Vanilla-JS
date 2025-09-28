@@ -37,7 +37,7 @@ body > * {
 .sign-up {
   width: 100%;
   max-width: 800px;
-  background-color: transparent;
+  background-color: rgba(20, 20, 20, 0.44);
   border: 2px solid rgb(255, 255, 255, 0.2);
   backdrop-filter: blur(20px);
   box-shadow: 0 0 10px rgb(0, 0, 0, 0.2);
@@ -50,7 +50,7 @@ body > * {
 .sign-up h1 {
   font-size: 36px;
   text-align: center;
-  color: rgb(139, 94, 60);
+  color: rgb(105, 137, 39, 0.7);
 }
 
 .sign-up p {
@@ -69,7 +69,7 @@ body > * {
 .log-in {
   width: 100%;
   max-width: 550px;
-  background-color: transparent;
+  background-color: rgba(20, 20, 20, 0.44);
   border: 2px solid rgb(255, 255, 255, 0.2);
   backdrop-filter: blur(20px);
   box-shadow: 0 0 10px rgb(0, 0, 0, 0.2);
@@ -83,7 +83,7 @@ body > * {
   font-size: 36px;
   font-weight: bold;
   text-align: center;
-  color: rgb(139, 94, 60);
+  color: rgb(105, 137, 39, 0.7);
 }
 
 .log-in p {
