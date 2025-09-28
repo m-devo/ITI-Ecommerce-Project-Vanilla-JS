@@ -82,8 +82,11 @@ export async function updateCart(productId, quantity = 1) {
 
     // check stock
     if (product.stock < quantity) {
-        showNotification(`${product?.name || "Product"} Max Quantity is ${product.stock}`, "danger");
-
+        if (product.stock > 0) {
+            showNotification(`${product?.name || "Product"} Max Quantity is ${product.stock}`, "danger");            
+        } else {
+            showNotification(`${product?.name || "Product"} is out of stock`, "danger");
+        }
         console.log("Product is out of stock");
         return;
     }
@@ -123,7 +126,11 @@ export async function updateItemQuantity(productId, quantity) {
     let product = await fetchProductById(productId);
 
     if (product.stock < quantity) {
-        showNotification(`${product?.name || "Product"} Max Quantity is ${product.stock}`, "danger");
+        if (product.stock > 0) {
+            showNotification(`${product?.name || "Product"} Max Quantity is ${product.stock}`, "danger");            
+        } else {
+            showNotification(`${product?.name || "Product"} is out of stock`, "danger");
+        }
 
         console.log("Product is out of stock");
         return;
