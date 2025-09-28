@@ -1,5 +1,6 @@
 // Product details
 import { fetchProductById, fetchAllProducts } from "../../data/products.js";
+import { updateCart } from "../../data/cart.js";
 
 let product = null;
 let productId = null;
@@ -119,14 +120,10 @@ window.decreaseDetailQuantity = function () {
   }
 };
 
-window.addToCartFromDetails = function () {
+window.addToCartFromDetails = async function () {
   const qtyInput = document.getElementById("detail-qty");
   const quantity = parseInt(qtyInput.value) || 1;
-  if (!product.stock || product.stock <= 0) {
-    showNotification(`${product?.name || "Product"} is out of stock`);
-    return;
-  }
-  addToCart(product.id, quantity);
+  await updateCart(product.id, quantity);
   qtyInput.value = 1;
 };
 
