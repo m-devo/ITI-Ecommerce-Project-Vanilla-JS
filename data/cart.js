@@ -39,23 +39,29 @@ export async function syncCartOnLogin(userId) {
     console.log('Cart synced with Firestore');
 }
 
-function mergeCarts(local, remote) {
+function mergeCarts(local = [], remote = []) {
     const merged = [...remote];
+
     local.forEach(localItem => {
         const remoteItemIndex = merged.findIndex(item => item.productId === localItem.productId);
         if (remoteItemIndex !== -1) {
-
-            merged[remoteItemIndex].quantity += localItem.quantity;
+            merged[remoteItemIndex].quantity = 
+                Number(merged[remoteItemIndex].quantity || 0) + Number(localItem.quantity || 0);
         } else {
-            merged.push(localItem);
+            merged.push({
+                ...localItem,
+                quantity: Number(localItem.quantity || 0),
+                price: Number(localItem.price || 0)
+            });
         }
     });
-    localStorage.removeItem('cart'); 
+
+    localStorage.removeItem('cart');
     return merged;
 }
 
 
-export async function updateCart(productId, quantity) {
+export async function updateCart(productId, quantity = 1) {
 
     const user = auth.currentUser;
 
@@ -65,8 +71,9 @@ export async function updateCart(productId, quantity) {
 
     console.log("🚀 ~ updateCart ~ userCart:", cart)
 
-    let currentQuantity = cart.find(item => item.productId === product.id)?.quantity || 0;
-
+    const existingItem = cart.find(item => item.productId === product.id);
+    let currentQuantity = existingItem ? Number(existingItem.quantity) : 0;
+    
     console.log("🚀 ~ updateCart ~ currentQuantity:", currentQuantity)
     
     quantity = currentQuantity + quantity;
