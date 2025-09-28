@@ -2,11 +2,11 @@ import { brandName, paths , homePath , basePath} from "../config/main.js";
 
 import { auth, db, storage } from '../assets/js/firebase-config.js';
 
+import { syncCartOnLogin} from '../data/cart.js';
+
 import {
     onAuthStateChanged,
     signOut,
-    updateEmail,
-    updatePassword
 } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
 import {
     doc, getDoc, updateDoc
@@ -99,47 +99,53 @@ class MainNavbar extends HTMLElement {
 
                 console.log("user", user);
 
-                // accountDropdown.innerHTML = user.first_name;
+                await syncCartOnLogin(user.uid);
 
-        
+                
+
+                
+                // accountDropdown.innerHTML = user.first_name;
+                
+                
                 const userRef = doc(db, "users", user.uid);
                 const docSnap = await getDoc(userRef);
-        
+                
                 if (docSnap.exists()) {
                     const data = docSnap.data();
 
                     console.log("data", data.fname);
-
+                    
                     const adminLink = data.role.toLowerCase() === "admin" ?
                             `<li><a class="dropdown-item" href="${basePath}/pages/admin/admin-dashboard.html">Admin</a></li>` : "";
                     
-
-
-                    accountDropdown.innerHTML = data.fname ?? data.first_name;
-                    accountDropdownMenu.innerHTML = `
-                        <li><a class="dropdown-item" href="${basePath}/pages/profile/profile.html">Profile</a></li>
-                        <li><a class="dropdown-item" href="${basePath}/pages/orders/orders.html">Orders</a></li>`
-                        +
+                            
+                            
+                            accountDropdown.innerHTML = data.fname ?? data.first_name;
+                            accountDropdownMenu.innerHTML = `
+                            <li><a class="dropdown-item" href="${basePath}/pages/profile/profile.html">Profile</a></li>
+                            <li><a class="dropdown-item" href="${basePath}/pages/orders/orders.html">Orders</a></li>`
+                            +
                             adminLink
                         +
                         `
                         <li><a class="sign-out dropdown-item" href="#">Logout</a></li>
-                    `;
-
-                    const signOutButton = document.querySelector(".sign-out");
-                    if (signOutButton) {
-                        signOutButton.addEventListener("click", async () => {
+                        `;
+                        
+                        const signOutButton = document.querySelector(".sign-out");
+                        if (signOutButton) {
+                            signOutButton.addEventListener("click", async () => {
                             await signOut(auth);
                             location.reload();
                         });
                     }
                 }
+
             } else {
-                    accountDropdown.innerHTML = "Account";
-                    accountDropdownMenu.innerHTML = `
-                        <li><a class="dropdown-item" href="${basePath}/pages/auth/login.html">Login</a></li>
-                        <li><a class="dropdown-item" href="${basePath}/pages/auth/Register.html">Register</a></li>
-                    `;
+                accountDropdown.innerHTML = "Account";
+                accountDropdownMenu.innerHTML = `
+                <li><a class="dropdown-item" href="${basePath}/pages/auth/login.html">Login</a></li>
+                <li><a class="dropdown-item" href="${basePath}/pages/auth/Register.html">Register</a></li>
+                `;
             }
         });
 

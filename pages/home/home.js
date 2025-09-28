@@ -1,4 +1,5 @@
 import { fetchFeaturedProducts } from "../../data/products.js";
+import { updateCart } from "../../data/cart.js";
 
 let featuredProducts = [];
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
@@ -143,7 +144,7 @@ window.decreaseQuantity = function (productId) {
   }
 };
 
-window.addToCart = function (productId) {
+window.addToCart = async function (productId) {
   const product = featuredProducts.find((p) => p.id == productId);
   if (!product) return;
   if (!product.stock || product.stock <= 0) {
@@ -152,18 +153,8 @@ window.addToCart = function (productId) {
   }
   const qtyInput = document.getElementById(`qty-${productId}`);
   const quantity = parseInt(qtyInput?.value || 1);
-  const existingItem = cart.find((item) => item.id == productId);
 
-  if (existingItem) {
-    existingItem.quantity += quantity;
-  } else {
-    cart.push({ ...product, quantity });
-  }
-
-  if (qtyInput) qtyInput.value = 1;
-  localStorage.setItem("cart", JSON.stringify(cart));
-  updateCartUI();
-  showNotification(`${product.name} added to cart!`);
+  await updateCart(productId, quantity);
 };
 
 function updateCartUI() {
