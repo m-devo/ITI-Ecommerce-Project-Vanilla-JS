@@ -24,8 +24,3 @@ onAuthStateChanged(auth, (user) => {
         loginMessage.style.display = "block";
     }
 });
-
-
-if (cart.length < 1) {
-    checkoutBtn.disabled = true;
-}

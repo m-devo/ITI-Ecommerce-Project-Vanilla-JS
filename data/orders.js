@@ -27,52 +27,56 @@ export const createOrder = async (cartItems, totalAmount, address, payment_metho
     return null;
   }
 
-    const orderId = await runTransaction(db, async (transaction) => {
-      // Create a reference for the new order beforehand
-      const newOrderRef = doc(collection(db, "orders"));
+  const orderId = await runTransaction(db, async (transaction) => {
+    const newOrderRef = doc(collection(db, "orders"));
+    const productSnapshots = {};
 
-      for (const item of cartItems) {
-        const productRef = doc(db, "products", item.id);
-        const productDoc = await transaction.get(productRef);
+    for (const item of cartItems) {
+      const productRef = doc(db, "products", item.id);
+      const productDoc = await transaction.get(productRef);
 
-        if (!productDoc.exists()) {
-          throw new Error(`Product with ID ${item.id} does not exist.`);
-        }
-
-        const currentStock = productDoc.data().stock;
-        
-        if (currentStock < item.quantity) {
-          alert(`Not enough stock for ${productDoc.data().name}. Only ${currentStock} left.`);
-          throw new Error(`Not enough stock for ${productDoc.data().name}. Only ${currentStock} left.`);
-        }
+      if (!productDoc.exists()) {
+        throw new Error(`Product with ID ${item.id} does not exist.`);
       }
 
-      for (const item of cartItems) {
-        const productRef = doc(db, "products", item.id);
-        const productDoc = await transaction.get(productRef); // Re-getting is safest
-        const newStock = productDoc.data().stock - item.quantity;
-        transaction.update(productRef, { stock: newStock });
+      const currentStock = productDoc.data().stock;
+      if (currentStock < item.quantity) {
+        showNotification(`Not enough stock for ${productDoc.data().name}. Only ${currentStock} left.`, "danger");
+        throw new Error(`Not enough stock for ${productDoc.data().name}. Only ${currentStock} left.`);
       }
 
-      const now = new Date();
-      const newOrderData = {
-        userId: user.uid,
-        products: cartItems,
-        total: totalAmount,
-        status: "pending",
-        date: now.toString(),
-        address: address,
-        payment_method: payment_method.card.brand !== "cash_on_delivery" ? `${payment_method.card.brand} ****${payment_method.card.last4}` : "Cash on Delivery",
-      };
-      
-      transaction.set(newOrderRef, newOrderData);
+      productSnapshots[item.id] = productDoc;
+    }
 
-      return newOrderRef.id;
-    });
+    for (const item of cartItems) {
+      const productRef = doc(db, "products", item.id);
+      const productDoc = productSnapshots[item.id];
+      const newStock = productDoc.data().stock - item.quantity;
+      transaction.update(productRef, { stock: newStock });
+    }
 
-    console.log("Order created successfully with ID:", orderId);
-    return orderId;
+    const now = new Date();
+    const newOrderData = {
+      userId: user.uid,
+      products: cartItems,
+      total: totalAmount,
+      status: "pending",
+      date: now.toString(),
+      address: address,
+      payment_method: payment_method.card.brand !== "cash_on_delivery"
+        ? `${payment_method.card.brand} ****${payment_method.card.last4}`
+        : "Cash on Delivery",
+    };
+
+    transaction.set(newOrderRef, newOrderData);
+
+    return newOrderRef.id;
+  });
+
+  console.log("Order created successfully with ID:", orderId);
+  return orderId;
 };
+
 
 export async function getUserOrders(uid) {
   try {
@@ -128,4 +132,23 @@ export function getOrderById(orderId) {
       }
     });
   });
+}
+
+function showNotification(message, type = "success") {
+    const notification = document.createElement("div");
+    const icon = type === "success" ? "check-circle" : "exclamation-triangle";
+    notification.className = `alert alert-${type} position-fixed`;
+    notification.style.cssText =
+        "top: 80px; right: 20px; z-index: 9999; min-width: 300px;";
+    notification.innerHTML = `
+        <i class="fas fa-${icon}"></i> ${message}
+        <button type="button" class="btn-close float-end" onclick="this.parentElement.remove()"></button>
+    `;
+
+    document.body.appendChild(notification);
+    setTimeout(() => {
+        if (notification.parentElement) {
+        notification.remove();
+        }
+    }, 3000);
 }

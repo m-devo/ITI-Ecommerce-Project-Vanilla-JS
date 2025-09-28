@@ -1,4 +1,5 @@
 import { fetchAllProducts } from "../../data/products.js";
+import { updateCart } from "../../data/cart.js";
 
 let allProducts = [];
 let currentFilters = {
@@ -299,36 +300,12 @@ window.decreaseQuantity = function (productId) {
   }
 };
 
-window.addToCart = function (productId, quantity = null) {
-  const product = allProducts.find((p) => p.id === productId);
-  if (!product) return;
-  if (!product.stock || product.stock <= 0) {
-    showNotification(`${product?.name || "Product"} is out of stock`);
-    return;
-  }
-
+window.addToCart = async function (productId) {
   const qtyInput = document.getElementById(`qty-${productId}`);
-  const finalQuantity = quantity || parseInt(qtyInput?.value || 1);
-
-  const existingItem = currentCart.find((item) => item.id === productId);
-
-  if (existingItem) {
-    existingItem.quantity += finalQuantity;
-  } else {
-    currentCart.push({
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      image: product.image,
-      quantity: finalQuantity,
-    });
-  }
-
-  if (qtyInput) qtyInput.value = 1;
-
-  localStorage.setItem("cart", JSON.stringify(currentCart));
-  updateCartUI();
-  showNotification(`${product.name} added to cart!`);
+  const product = allProducts.find((p) => p.id === productId);
+  let quantity = parseInt(qtyInput?.value || 1);
+  
+  await updateCart(productId, quantity);
 };
 
 window.viewProductDetails = function (productId) {
