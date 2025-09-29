@@ -129,7 +129,7 @@ function renderWishlist() {
   }
 
   updateWishlistCount();
-  updateCartUI();
+  // updateCartUI();
 }
 
 function isInWishlist(id) {
@@ -239,7 +239,7 @@ function addToCartFromWishlist(product, quantity = 1) {
 
   localStorage.setItem("cart", JSON.stringify(cart));
   currentCart = cart;
-  updateCartUI();
+  // updateCartUI();
   window.dispatchEvent(new CustomEvent("cart:updated"));
 }
 
@@ -272,17 +272,17 @@ function showNotification(message) {
   }, 3000);
 }
 
-function updateCartUI() {
-  const cartCount = currentCart.reduce(
-    (total, item) => total + item.quantity,
-    0
-  );
+// function updateCartUI() {
+//   const cartCount = currentCart.reduce(
+//     (total, item) => total + item.quantity,
+//     0
+//   );
 
-  const cartLink = document.querySelector('.navbar .nav-link[href*="cart"]');
-  if (cartLink) {
-    cartLink.innerHTML = `Cart (${cartCount}) <i class="fas fa-shopping-cart"></i>`;
-  }
-}
+//   const cartLink = document.querySelector('.navbar .nav-link[href*="cart"]');
+//   if (cartLink) {
+//     cartLink.innerHTML = `Cart (${cartCount}) <i class="fas fa-shopping-cart"></i>`;
+//   }
+// }
 
 document.addEventListener("DOMContentLoaded", () => {
   const sortSelect = document.getElementById("wishlist-sort");

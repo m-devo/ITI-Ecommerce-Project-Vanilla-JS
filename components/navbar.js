@@ -15,13 +15,13 @@ import {
     ref, uploadBytes, getDownloadURL
 } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-storage.js";
 
-console.log(paths);
+let user = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : null;
+let cartQuantity = localStorage.getItem("cartQuantity") ? JSON.parse(localStorage.getItem("cartQuantity")) : 0;
+
 
 class MainNavbar extends HTMLElement {
     
     connectedCallback() {
-
-        let currentCart = JSON.parse(localStorage.getItem("cart")) || [];
 
         let wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
 
@@ -51,8 +51,22 @@ class MainNavbar extends HTMLElement {
 
                     <div class="dropdown mx-1">
                     <button class="btn btn-primary dropdown-toggle dropdown-account" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        ${user ? user.fname ?? user.first_name : "Account"}
                     </button>
                     <ul class="dropdown-menu dropdown-menu-account">
+                        ${user ?                                                
+                            // login
+                            `<li><a class="dropdown-item" href="${basePath}/pages/profile/profile.html">Profile</a></li>
+                            <li><a class="dropdown-item" href="${basePath}/pages/orders/orders.html">Orders</a></li>
+                            ${user.role.toLowerCase()=== "admin" ?
+                            `<li><a class="dropdown-item" href="${basePath}/pages/admin/admin-dashboard.html">Admin</a></li>` : ""}
+                            <li><a class="sign-out dropdown-item" href="#">Logout</a></li>`
+                        :
+                            // not login 
+                            `<li><a class="dropdown-item" href="${basePath}/pages/auth/login.html">Login</a></li>
+                            <li><a class="dropdown-item" href="${basePath}/pages/auth/Register.html">Register</a></li>
+                            `
+                        }
                     </ul>
                     </div>
 
@@ -64,17 +78,20 @@ class MainNavbar extends HTMLElement {
         let accountDropdownMenu = document.querySelector(".dropdown-menu-account");
 
 
-        (function updateCartUI() {
-            const cartCount = currentCart.reduce(
-                (total, item) => total + item.quantity,
-                0
-            );
+        function updateCartUI() {
+
+            const cartCount = localStorage.getItem("cartQuantity") ? JSON.parse(localStorage.getItem("cartQuantity")) : 0;
+
+            console.log("🚀 ~ updateCartUI ~ cartCount:", cartCount)
 
             const cartLink = document.querySelector('.navbar .nav-link[href*="cart"]');
             if (cartLink) {
                 cartLink.innerHTML = `Cart (${cartCount}) <i class="fas fa-shopping-cart"></i>`;
             }
-        })();
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updateCartUI();
 
         (function updateWishlistCount() {
             const count = wishlist.length;
@@ -113,13 +130,15 @@ class MainNavbar extends HTMLElement {
                 if (docSnap.exists()) {
                     const data = docSnap.data();
 
+                    localStorage.setItem("user", JSON.stringify(data));
+
                     console.log("data", data.fname);
+
+
                     
                     const adminLink = data.role.toLowerCase() === "admin" ?
                             `<li><a class="dropdown-item" href="${basePath}/pages/admin/admin-dashboard.html">Admin</a></li>` : "";
-                    
-                            
-                            
+             
                             accountDropdown.innerHTML = data.fname ?? data.first_name;
                             accountDropdownMenu.innerHTML = `
                             <li><a class="dropdown-item" href="${basePath}/pages/profile/profile.html">Profile</a></li>
@@ -135,18 +154,24 @@ class MainNavbar extends HTMLElement {
                         if (signOutButton) {
                             signOutButton.addEventListener("click", async () => {
                             await signOut(auth);
+                            localStorage.removeItem("user");
+                            localStorage.removeItem("cartQuantity");
                             location.reload();
                         });
                     }
                 }
 
             } else {
+
                 accountDropdown.innerHTML = "Account";
                 accountDropdownMenu.innerHTML = `
                 <li><a class="dropdown-item" href="${basePath}/pages/auth/login.html">Login</a></li>
                 <li><a class="dropdown-item" href="${basePath}/pages/auth/Register.html">Register</a></li>
                 `;
             }
+        });
+
+
         });
 
 

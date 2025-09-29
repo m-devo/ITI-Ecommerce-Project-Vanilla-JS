@@ -101,6 +101,7 @@ export async function updateCart(productId, quantity = 1) {
 
             await setDoc(cartRef, { items: cart });
             console.log("🚀 ~ updateCart ~ cart:", cart)
+            updateCartUI(cart);
         } else {
             // add new product to cart
 
@@ -108,6 +109,8 @@ export async function updateCart(productId, quantity = 1) {
 
             await setDoc(cartRef, { items: newCartItems });
             console.log("🚀 ~ updateCart ~ newCartItems:", newCartItems)
+            updateCartUI(newCartItems);
+
         }
 
 
@@ -155,6 +158,7 @@ export async function updateItemQuantity(productId, quantity) {
         await updateDoc(cartRef, { items: updatedCartItems });
 
         showNotification(`Item quantity updated!`);
+        updateCartUI(updatedCartItems);
     } else {
         const cart = localStorage.getItem('cart');
         const updatedCart = JSON.parse(cart).map(item => {
@@ -179,6 +183,7 @@ export async function removeItemFromCart(productId) {
         const newCartItems = localCart.filter(item => item.productId !== productId);
 
         await setDoc(cartRef, { items: newCartItems });
+        updateCartUI(newCartItems);
     } else {
 
         localCart = localCart.filter(item => item.productId !== productId);
@@ -190,10 +195,10 @@ export async function removeItemFromCart(productId) {
 }
 
 function updateCartUI(cart) {
-    const cartCount = cart.reduce(
-        (total, item) => total + item.quantity,
-        0
-    );
+    const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
+
+    localStorage.setItem('cartQuantity', cartCount);
+
     const cartLink = document.querySelector('.navbar .nav-link[href*="cart"]');
     if (cartLink) {
         cartLink.innerHTML = `Cart (${cartCount}) <i class="fas fa-shopping-cart"></i>`;

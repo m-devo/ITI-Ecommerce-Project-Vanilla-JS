@@ -8,7 +8,7 @@ const productsContainer = document.getElementById("products-container");
 
 document.addEventListener("DOMContentLoaded", function () {
   displayFeaturedProducts();
-  updateCartUI();
+  // updateCartUI();
   updateWishlistCount();
   updateWishlistButtonStates();
 
@@ -157,13 +157,13 @@ window.addToCart = async function (productId) {
   await updateCart(productId, quantity);
 };
 
-function updateCartUI() {
-  const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
-  const cartLink = document.querySelector('.navbar .nav-link[href*="cart"]');
-  if (cartLink) {
-    cartLink.innerHTML = `Cart (${cartCount}) <i class="fas fa-shopping-cart"></i>`;
-  }
-}
+// function updateCartUI() {
+//   const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
+//   const cartLink = document.querySelector('.navbar .nav-link[href*="cart"]');
+//   if (cartLink) {
+//     cartLink.innerHTML = `Cart (${cartCount}) <i class="fas fa-shopping-cart"></i>`;
+//   }
+// }
 
 function showNotification(message) {
   const notification = document.createElement("div");

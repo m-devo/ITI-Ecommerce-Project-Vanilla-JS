@@ -9,7 +9,7 @@ let currentCart = JSON.parse(localStorage.getItem("cart")) || [];
 document.addEventListener("DOMContentLoaded", function () {
   loadProductDetails();
   updateWishlistCount();
-  updateCartUI();
+  // updateCartUI();
 
   window.addEventListener("wishlist:updated", updateWishlistCount);
 });
@@ -253,17 +253,17 @@ function showNotification(message) {
   }, 3000);
 }
 
-function updateCartUI() {
-  const cartCount = currentCart.reduce(
-    (total, item) => total + item.quantity,
-    0
-  );
-  const cartLink = document.querySelector('.navbar .nav-link[href*="cart"]');
+// function updateCartUI() {
+//   const cartCount = currentCart.reduce(
+//     (total, item) => total + item.quantity,
+//     0
+//   );
+//   const cartLink = document.querySelector('.navbar .nav-link[href*="cart"]');
 
-  if (cartLink) {
-    cartLink.innerHTML = `Cart (${cartCount}) <i class="fas fa-shopping-cart"></i>`;
-  }
-}
+//   if (cartLink) {
+//     cartLink.innerHTML = `Cart (${cartCount}) <i class="fas fa-shopping-cart"></i>`;
+//   }
+// }
 
 function updateWishlistCount() {
   try {
