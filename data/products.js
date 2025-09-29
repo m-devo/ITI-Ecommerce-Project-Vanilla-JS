@@ -22,28 +22,23 @@ export async function fetchAllProducts({
     const productsCollection = collection(db, "products");
     const queryConstraints = [];
 
-    // Category and Search filters remain the same
     if (category) {
       queryConstraints.push(where("category", "==", category));
     }
 
-    if (search) {
+    const usingSearch = Boolean(search && search.trim().length > 0);
+
+    if (usingSearch) {
       const searchTerm = search.toLowerCase();
       queryConstraints.push(where("name_lowercase", ">=", searchTerm));
-      queryConstraints.push(
-        where("name_lowercase", "<=", searchTerm + "\uf8ff")
-      );
+      queryConstraints.push(where("name_lowercase", "<=", searchTerm + "\uf8ff"));
       queryConstraints.push(orderBy("name_lowercase"));
-    }
-
-    if (sort && !search) {
-      if (sort === "price-high") {
-        queryConstraints.push(orderBy("price", "desc"));
-      }
+    } else {
       if (sort === "price-low") {
         queryConstraints.push(orderBy("price", "asc"));
-      }
-      if (sort === "rating") {
+      } else if (sort === "price-high") {
+        queryConstraints.push(orderBy("price", "desc"));
+      } else if (sort === "rating") {
         queryConstraints.push(orderBy("rating", "desc"));
       }
     }
@@ -62,14 +57,16 @@ export async function fetchAllProducts({
       ...doc.data(),
     }));
 
-    // If there was a search and a sort, we sort the results here
-    if (search && sort) {
+    console.log("Fetched products before sort:", products);
+
+    if (usingSearch && sort) {
       products.sort((a, b) => {
-        if (sort === "price-high") return b.price - a.price;
-        if (sort === "price-low") return a.price - b.price;
-        if (sort === "rating") return b.rating - a.rating;
+        if (sort === "price-high") return (b.price || 0) - (a.price || 0);
+        if (sort === "price-low") return (a.price || 0) - (b.price || 0);
+        if (sort === "rating") return (b.rating || 0) - (a.rating || 0);
         return 0;
       });
+      console.log("Products after manual sort:", products);
     }
 
     const newLastVisible =
@@ -80,6 +77,7 @@ export async function fetchAllProducts({
     return { products, lastVisible: newLastVisible };
   } catch (error) {
     console.error("Error fetching products: ", error);
+    return { products: [], lastVisible: null };
   }
 }
 

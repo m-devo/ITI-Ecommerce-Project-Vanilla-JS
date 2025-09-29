@@ -39,6 +39,7 @@ function setupFilters() {
   if (categoryFilter) {
     categoryFilter.addEventListener("change", (e) => {
       currentFilters.category = e.target.value === "all" ? "" : e.target.value;
+      currentFilters.lastVisible = null;
       displayProducts();
     });
   }
@@ -47,10 +48,12 @@ function setupFilters() {
 function setupSearch() {
   const searchInput = document.getElementById("search-input");
   const searchBtn = document.getElementById("search-btn");
+  const sortFilter = document.getElementById("sort-select");
 
   if (searchInput && searchBtn) {
     const handleSearch = () => {
       currentFilters.search = searchInput.value.trim();
+      currentFilters.lastVisible = null;
       displayProducts();
     };
 
@@ -59,6 +62,15 @@ function setupSearch() {
       if (e.key === "Enter") handleSearch();
     });
     searchBtn.addEventListener("click", handleSearch);
+  }
+
+  if (sortFilter) {
+    sortFilter.addEventListener("change", (e) => {
+        
+      currentFilters.sort = e.target.value;
+      currentFilters.lastVisible = null;
+      displayProducts(currentFilters);
+    });
   }
 }
 
